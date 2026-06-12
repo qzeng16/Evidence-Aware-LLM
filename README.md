@@ -35,6 +35,12 @@ Decision + Confidence + Evidence
 
 ---
 
+## Demo
+
+![Demo](assets/demo.png)
+
+---
+
 ## Features
 
 - Semantic evidence retrieval using `sentence-transformers`
