@@ -1,7 +1,13 @@
 # Evidence-Aware LLM Reasoning System
 
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![NLP](https://img.shields.io/badge/NLP-Retrieval-green)
+![Status](https://img.shields.io/badge/Status-Prototype-orange)
+
 This project implements a lightweight evidence-aware claim verification system.  
 The system retrieves relevant evidence using sentence-transformer embeddings and then applies query-aware reasoning rules to classify a claim as **Supported**, **Refuted**, or **Uncertain**.
+
+---
 
 ## Motivation
 
@@ -10,6 +16,8 @@ This project explores a simple pipeline for improving factual reasoning by separ
 
 1. Retrieve relevant evidence.
 2. Verify the claim based on the retrieved evidence.
+
+---
 
 ## System Pipeline
 
@@ -25,6 +33,8 @@ Query-Aware Verification
 Decision + Confidence + Evidence
 ```
 
+---
+
 ## Features
 
 - Semantic evidence retrieval using `sentence-transformers`
@@ -32,17 +42,24 @@ Decision + Confidence + Evidence
 - Query-aware verification rules
 - Outputs claim decision: `Supported`, `Refuted`, or `Uncertain`
 - Provides confidence score and retrieved evidence
+- Lightweight and modular Python implementation
+
+---
 
 ## Project Structure
 
 ```text
-evidence_llm_project/
-├── papers.csv        # Local evidence database
-├── retrieve.py       # Semantic evidence retrieval module
-├── reason.py         # Evidence-aware reasoning baseline
-├── verifier.py       # Query-aware claim verification system
-└── README.md         # Project documentation
+Evidence-Aware-LLM/
+├── papers.csv          # Local evidence database
+├── retrieve.py         # Semantic evidence retrieval module
+├── reason.py           # Evidence-aware reasoning baseline
+├── verifier.py         # Query-aware claim verification system
+├── requirements.txt    # Python dependencies
+├── .gitignore          # Files ignored by Git
+└── README.md           # Project documentation
 ```
+
+---
 
 ## Methods
 
@@ -56,12 +73,40 @@ Given a user claim, the system computes cosine similarity between the claim embe
 
 The verifier compares the user claim with the retrieved evidence and applies query-aware reasoning rules to determine whether the evidence supports, refutes, or does not sufficiently address the claim.
 
-The current system handles:
+The current system handles several types of claims, including:
 
 - LLM hallucination or unsupported scientific claims
 - Reliability claims
 - Improvement or benefit claims
 - Human oversight claims
+- Claims involving biased or limited datasets
+
+---
+
+## Quick Start
+
+Clone the repository:
+
+```bash
+git clone https://github.com/qzeng16/Evidence-Aware-LLM.git
+cd Evidence-Aware-LLM
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the verifier:
+
+```bash
+python3 verifier.py
+```
+
+Then enter a claim or question when prompted.
+
+---
 
 ## Example Outputs
 
@@ -135,21 +180,23 @@ Reason: The retrieved evidence suggests reliability problems or limitations that
 AI models trained on small or biased datasets often produce unreliable conclusions.
 ```
 
-## How to Run
+---
 
-Install dependencies:
+## Dataset
 
-```bash
-python3 -m pip install sentence-transformers scikit-learn pandas numpy
-```
+The current version uses a small local evidence corpus stored in `papers.csv`.
 
-Run the verifier:
+The evidence database includes short passages related to:
 
-```bash
-python3 verifier.py
-```
+- Large language model hallucination
+- Retrieval-augmented generation
+- Human oversight in AI systems
+- Dataset bias and reliability
+- Evidence-grounded factual reasoning
 
-Then enter a claim or question when prompted.
+This dataset is designed for prototype demonstration rather than large-scale benchmark evaluation.
+
+---
 
 ## Current Limitations
 
@@ -162,8 +209,11 @@ Future improvements may include:
 - Adding quantitative evaluation metrics
 - Supporting citation-level evidence extraction
 - Comparing retrieval-only, rule-based, and LLM-based verification methods
+- Building a simple web interface for interactive claim verification
 
-## Skills Demonstrated
+---
+
+## Technical Skills Demonstrated
 
 - Python programming
 - NLP pipeline construction
@@ -171,4 +221,14 @@ Future improvements may include:
 - Semantic search
 - Evidence retrieval
 - Claim verification
-- AI reasoning system design
+- Query-aware reasoning
+- Machine learning prototyping
+- AI reliability system design
+
+---
+
+## Author
+
+**Qihong Zeng**  
+MS in Systems Engineering  
+Johns Hopkins University
