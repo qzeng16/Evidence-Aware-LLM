@@ -1,0 +1,11 @@
+claim,expected_label
+Do large language models hallucinate scientific claims?,Supported
+Does retrieval augmented generation improve factual reliability?,Supported
+Are AI models always reliable on small biased datasets?,Refuted
+Can human expert review reduce the risk of unsupported AI-generated conclusions?,Supported
+Do small biased datasets often lead to unreliable AI conclusions?,Supported
+Does retrieval grounding help reduce unsupported model outputs?,Supported
+Are AI-generated scientific claims always trustworthy without evidence?,Refuted
+Can unsupported scientific statements be produced by language models?,Supported
+Is human oversight unnecessary when evaluating AI-generated scientific claims?,Refuted
+Does insufficient evidence make a claim uncertain?,Supported
