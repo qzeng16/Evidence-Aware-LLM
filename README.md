@@ -1,36 +1,47 @@
-# Evidence-Aware LLM Reasoning System
+# Evidence-Aware Claim Verification System
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![NLP](https://img.shields.io/badge/NLP-Retrieval-green)
+![AI Reliability](https://img.shields.io/badge/AI-Reliability-purple)
 ![Status](https://img.shields.io/badge/Status-Prototype-orange)
 
-This project implements a lightweight evidence-aware claim verification system.  
-The system retrieves relevant evidence using sentence-transformer embeddings and then applies query-aware reasoning rules to classify a claim as **Supported**, **Refuted**, or **Uncertain**.
+This project implements a lightweight **evidence-aware claim verification system** for AI reliability research. It retrieves relevant evidence using sentence-transformer embeddings and applies query-aware reasoning rules to classify claims as **Supported**, **Refuted**, or **Uncertain**.
+
+The goal of this project is to explore how retrieval-grounded reasoning can improve the reliability and transparency of AI systems when evaluating scientific or technical claims.
 
 ---
 
 ## Motivation
 
-Large language models can generate fluent answers that are not always grounded in reliable evidence.  
-This project explores a simple pipeline for improving factual reasoning by separating the process into two steps:
+Modern AI systems, especially large language models, can generate fluent and confident responses that are not always grounded in reliable evidence. This creates challenges in scientific, technical, and decision-making contexts, where unsupported claims may lead to incorrect conclusions.
+
+This project investigates a simple and interpretable approach:
 
 1. Retrieve relevant evidence.
-2. Verify the claim based on the retrieved evidence.
+2. Rank evidence using semantic similarity.
+3. Verify the claim based on the retrieved evidence.
+4. Return a decision with confidence and supporting evidence.
+
+By separating retrieval from reasoning, the system makes the verification process more transparent and easier to inspect.
 
 ---
 
 ## System Pipeline
 
 ```text
-User Claim
+Input Claim
+    ↓
+Evidence Database
     ↓
 Sentence-Transformer Embedding
     ↓
-Semantic Evidence Retrieval
+Cosine Similarity Retrieval
     ↓
-Query-Aware Verification
+Top-K Evidence Selection
     ↓
-Decision + Confidence + Evidence
+Query-Aware Reasoning Rules
+    ↓
+Supported / Refuted / Uncertain + Confidence + Evidence
 ```
 
 ---
@@ -44,11 +55,13 @@ Decision + Confidence + Evidence
 ## Features
 
 - Semantic evidence retrieval using `sentence-transformers`
-- Cosine similarity-based ranking of evidence
-- Query-aware verification rules
-- Outputs claim decision: `Supported`, `Refuted`, or `Uncertain`
-- Provides confidence score and retrieved evidence
+- Cosine similarity ranking for evidence selection
+- Query-aware reasoning rules
+- Three-way claim classification: `Supported`, `Refuted`, or `Uncertain`
+- Confidence score for each verification result
+- Interpretable retrieved evidence display
 - Lightweight and modular Python implementation
+- Designed as a research prototype for AI reliability and claim verification
 
 ---
 
@@ -59,7 +72,7 @@ Evidence-Aware-LLM/
 ├── papers.csv          # Local evidence database
 ├── retrieve.py         # Semantic evidence retrieval module
 ├── reason.py           # Evidence-aware reasoning baseline
-├── verifier.py         # Query-aware claim verification system
+├── verifier.py         # Main claim verification pipeline
 ├── requirements.txt    # Python dependencies
 ├── .gitignore          # Files ignored by Git
 └── README.md           # Project documentation
@@ -71,21 +84,35 @@ Evidence-Aware-LLM/
 
 ### 1. Evidence Retrieval
 
-The system converts each evidence document into an embedding using the sentence-transformer model `all-MiniLM-L6-v2`.
+The system converts each evidence passage into an embedding using the sentence-transformer model `all-MiniLM-L6-v2`.
 
-Given a user claim, the system computes cosine similarity between the claim embedding and each evidence embedding. The top-ranked evidence passages are returned for verification.
+Given an input claim, the system computes cosine similarity between the claim embedding and each evidence embedding. The top-ranked evidence passages are then returned for verification.
+
+This retrieval step helps the system focus on evidence that is semantically related to the claim instead of relying only on keyword matching.
 
 ### 2. Query-Aware Verification
 
-The verifier compares the user claim with the retrieved evidence and applies query-aware reasoning rules to determine whether the evidence supports, refutes, or does not sufficiently address the claim.
+After retrieving relevant evidence, the verifier applies query-aware reasoning rules to determine whether the evidence supports, refutes, or does not sufficiently address the claim.
 
 The current system handles several types of claims, including:
 
-- LLM hallucination or unsupported scientific claims
-- Reliability claims
-- Improvement or benefit claims
-- Human oversight claims
+- AI hallucination or unsupported scientific claims
+- Reliability and factuality claims
+- Retrieval-augmented generation claims
+- Human oversight and expert review claims
 - Claims involving biased or limited datasets
+- Claims where available evidence is insufficient or inconclusive
+
+### 3. Interpretable Output
+
+For each claim, the system returns:
+
+- A final decision: `Supported`, `Refuted`, or `Uncertain`
+- A confidence score
+- A short reasoning explanation
+- Retrieved evidence passages used by the system
+
+This makes the decision process easier to inspect and debug.
 
 ---
 
@@ -199,6 +226,7 @@ The evidence database includes short passages related to:
 - Human oversight in AI systems
 - Dataset bias and reliability
 - Evidence-grounded factual reasoning
+- AI system limitations and uncertainty
 
 This dataset is designed for prototype demonstration rather than large-scale benchmark evaluation.
 
@@ -206,15 +234,31 @@ This dataset is designed for prototype demonstration rather than large-scale ben
 
 ## Current Limitations
 
-This is a baseline prototype. The current version uses a small local evidence database and rule-based verification logic.
+This project is a lightweight research prototype and has several limitations:
 
-Future improvements may include:
+- The evidence database is small and manually constructed.
+- The reasoning module is rule-based rather than a trained neural verifier.
+- Retrieval quality strongly affects the final decision.
+- The system may struggle with complex causal claims or claims requiring domain expertise.
+- The confidence score is heuristic and should not be interpreted as a calibrated probability.
+- The current version is designed for demonstration rather than production use.
 
-- Replacing rule-based reasoning with an LLM or NLI model
-- Expanding the evidence database with real scientific papers
-- Adding quantitative evaluation metrics
-- Supporting citation-level evidence extraction
+These limitations are intentional for the current prototype stage and help identify directions for future improvement.
+
+---
+
+## Future Work
+
+Possible extensions include:
+
+- Expanding the evidence database with real scientific abstracts or papers
+- Adding a quantitative evaluation script with accuracy, precision, recall, and F1 score
+- Evaluating the system on public fact-checking or claim verification datasets
+- Replacing rule-based reasoning with a fine-tuned neural classifier or NLI model
+- Adding citation-level evidence attribution
+- Improving confidence calibration
 - Comparing retrieval-only, rule-based, and LLM-based verification methods
+- Incorporating LLM-generated explanations grounded in retrieved evidence
 - Building a simple web interface for interactive claim verification
 
 ---
@@ -225,11 +269,21 @@ Future improvements may include:
 - NLP pipeline construction
 - Sentence embeddings
 - Semantic search
+- Cosine similarity ranking
 - Evidence retrieval
 - Claim verification
 - Query-aware reasoning
 - Machine learning prototyping
 - AI reliability system design
+- Interpretable AI workflow design
+
+---
+
+## Project Positioning
+
+This project is positioned as a small research-oriented prototype in **AI reliability**, **retrieval-grounded reasoning**, and **claim verification**.
+
+Rather than relying on generated answers alone, the system demonstrates how an AI pipeline can retrieve evidence first and then make a more transparent verification decision based on that evidence.
 
 ---
 
