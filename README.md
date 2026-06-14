@@ -69,13 +69,17 @@ Supported / Refuted / Uncertain + Confidence + Evidence
 
 ```text
 Evidence-Aware-LLM/
-├── papers.csv          # Local evidence database
-├── retrieve.py         # Semantic evidence retrieval module
-├── reason.py           # Evidence-aware reasoning baseline
-├── verifier.py         # Main claim verification pipeline
-├── requirements.txt    # Python dependencies
-├── .gitignore          # Files ignored by Git
-└── README.md           # Project documentation
+├── assets/
+│   └── demo.png          # Demo screenshot
+├── claims.csv            # Small evaluation claim set
+├── papers.csv            # Local evidence database
+├── retrieve.py           # Semantic evidence retrieval module
+├── reason.py             # Evidence-aware reasoning baseline
+├── verifier.py           # Main claim verification pipeline
+├── evaluation.py         # Evaluation script
+├── requirements.txt      # Python dependencies
+├── .gitignore            # Files ignored by Git
+└── README.md             # Project documentation
 ```
 
 ---
@@ -215,6 +219,30 @@ AI models trained on small or biased datasets often produce unreliable conclusio
 
 ---
 
+## Evaluation
+
+A small evaluation set is included in `claims.csv`. The evaluation script runs the verifier on multiple claims and compares the predicted label with the expected label.
+
+Run:
+
+```bash
+python3 evaluation.py
+```
+
+Current evaluation result:
+
+```text
+Total: 10
+Correct: 8
+Accuracy: 0.80
+```
+
+This small evaluation is designed to demonstrate the verification workflow rather than serve as a large-scale benchmark.
+
+The current errors also help reveal limitations of the prototype, such as difficulty handling abstract claims about uncertainty and cases where the retrieved evidence is relevant but not decisive.
+
+---
+
 ## Dataset
 
 The current version uses a small local evidence corpus stored in `papers.csv`.
@@ -240,6 +268,7 @@ This project is a lightweight research prototype and has several limitations:
 - The reasoning module is rule-based rather than a trained neural verifier.
 - Retrieval quality strongly affects the final decision.
 - The system may struggle with complex causal claims or claims requiring domain expertise.
+- The system may be less reliable when evaluating abstract claims about uncertainty or evidence sufficiency.
 - The confidence score is heuristic and should not be interpreted as a calibrated probability.
 - The current version is designed for demonstration rather than production use.
 
@@ -252,7 +281,8 @@ These limitations are intentional for the current prototype stage and help ident
 Possible extensions include:
 
 - Expanding the evidence database with real scientific abstracts or papers
-- Adding a quantitative evaluation script with accuracy, precision, recall, and F1 score
+- Increasing the evaluation set size and diversity
+- Adding quantitative evaluation metrics such as precision, recall, and F1 score
 - Evaluating the system on public fact-checking or claim verification datasets
 - Replacing rule-based reasoning with a fine-tuned neural classifier or NLI model
 - Adding citation-level evidence attribution
@@ -273,6 +303,7 @@ Possible extensions include:
 - Evidence retrieval
 - Claim verification
 - Query-aware reasoning
+- Basic evaluation workflow
 - Machine learning prototyping
 - AI reliability system design
 - Interpretable AI workflow design
