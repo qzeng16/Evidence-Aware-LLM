@@ -1,5 +1,7 @@
 # Evidence-Aware LLM Claim Verification System
 
+[![CI](https://github.com/qzeng16/Evidence-Aware-LLM/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/qzeng16/Evidence-Aware-LLM/actions/workflows/ci.yml)
+
 This project is a small evidence-aware claim verification system.
 
 It retrieves relevant evidence for a user claim, compares the claim against the evidence, and returns one of three labels:
@@ -408,3 +410,100 @@ Run the curl example while the API server is running:
 
     ./examples/curl_verify_example.sh
 
+
+<!-- layer-3-engineering -->
+
+## Docker and CI
+
+This project is a production-style AI engineering demo for evidence-aware
+claim verification. It should not be presented as a production fact-checking
+system.
+
+### Start with Docker Compose
+
+Build and start the FastAPI service:
+
+```bash
+docker compose up --build --detach
+```
+
+Check the container and health status:
+
+```bash
+docker compose ps
+```
+
+View application logs:
+
+```bash
+docker compose logs --follow api
+```
+
+Open the API documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+Test the verification endpoint:
+
+```bash
+curl \
+  --silent \
+  --show-error \
+  --fail \
+  --request POST \
+  --url http://localhost:8000/verify \
+  --header "Content-Type: application/json" \
+  --data @examples/verify_request.json
+```
+
+Stop the service:
+
+```bash
+docker compose down
+```
+
+The normal `docker compose down` command preserves the named Hugging Face
+model-cache volume.
+
+### Run Locally
+
+Install the dependencies:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+Start the development API:
+
+```bash
+make api
+```
+
+Run the unit tests:
+
+```bash
+make test
+```
+
+Run the API smoke test while the API is running:
+
+```bash
+make test-api
+```
+
+### Continuous Integration
+
+The GitHub Actions workflow is located at:
+
+```text
+.github/workflows/ci.yml
+```
+
+For pushes and pull requests targeting `main`, the workflow:
+
+1. Installs the Python dependencies and runs the pytest unit tests.
+2. Builds the Docker image on a Linux runner without publishing it.
+
+The Docker build job only runs after the unit tests pass.
