@@ -1,0 +1,22 @@
+[
+  {
+    "pattern": "not always reliable",
+    "label": "Refuted",
+    "confidence": 0.8
+  },
+  {
+    "pattern": "improve factual reliability",
+    "label": "Supported",
+    "confidence": 0.85
+  },
+  {
+    "pattern": "unsupported scientific claims",
+    "label": "Supported",
+    "confidence": 0.8
+  },
+  {
+    "pattern": "human oversight is important",
+    "label": "Supported",
+    "confidence": 0.82
+  }
+]

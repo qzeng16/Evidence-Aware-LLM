@@ -1,0 +1,21 @@
+claim,expected_label,predicted_label,correct,confidence,top_evidence_title,top_evidence_score,abstention_reason
+Retrieval augmented generation can improve factual reliability.,Supported,Supported,True,0.86,Retrieval Augmented Generation,0.6159,
+Grounding answers in retrieved documents can improve factual reliability.,Supported,Supported,True,0.84,Retrieval Augmented Generation,0.8692,
+Large language models can generate unsupported scientific claims.,Supported,Supported,True,0.84,AI Hallucination Risks,1.0,
+Human oversight is important for AI scientific reasoning.,Supported,Supported,True,0.84,Human Oversight in AI Research,0.975,
+Human supervision is important when using AI systems for scientific reasoning.,Supported,Supported,True,0.82,Human Oversight in AI Research,0.8623,
+AI models trained on small biased datasets are not always reliable.,Supported,Supported,True,0.88,Small Dataset Problem,1.0,
+AI models trained on small biased datasets are always reliable.,Refuted,Refuted,True,0.86,Small Dataset Problem,0.9587,
+Small biased datasets always make AI models reliable.,Refuted,Refuted,True,0.86,Small Dataset Problem,0.9195,
+Retrieval augmented generation cannot improve factual reliability.,Refuted,Refuted,True,0.86,Retrieval Augmented Generation,0.5407,
+Large language models never generate unsupported scientific claims.,Refuted,Refuted,True,0.86,AI Hallucination Risks,0.8714,
+Human oversight is not important for AI scientific reasoning.,Refuted,Refuted,True,0.86,Human Oversight in AI Research,0.8094,
+Large language models always provide accurate scientific claims.,Refuted,Refuted,True,0.84,AI Hallucination Risks,0.7823,
+Do bananas improve AI model reliability?,Uncertain,Uncertain,True,0.35,Small Dataset Problem,0.4464,Claim contains scope-specific terms not covered by the evidence.
+Does coffee reduce AI hallucination?,Uncertain,Uncertain,True,0.35,Human Oversight in AI Research,0.2646,Claim contains scope-specific terms not covered by the evidence.
+Can vector databases reduce model latency?,Uncertain,Uncertain,True,0.3,,,No relevant evidence found.
+Does RAG improve dental diagnosis accuracy?,Uncertain,Uncertain,True,0.35,Retrieval Augmented Generation,0.4667,Claim contains scope-specific terms not covered by the evidence.
+Does human oversight eliminate all AI errors?,Uncertain,Uncertain,True,0.35,Human Oversight in AI Research,0.6764,Claim makes an absolute claim not supported by the evidence.
+Are transformers better than graph neural networks for biology?,Uncertain,Uncertain,True,0.35,Small Dataset Problem,0.2092,Claim contains scope-specific terms not covered by the evidence.
+Is all scientific reasoning improved by AI systems?,Uncertain,Uncertain,True,0.35,Human Oversight in AI Research,0.6906,Claim makes an absolute claim not supported by the evidence.
+Does retrieved evidence guarantee every LLM answer is correct?,Uncertain,Uncertain,True,0.35,Retrieval Augmented Generation,0.4097,Claim makes an absolute claim not supported by the evidence.

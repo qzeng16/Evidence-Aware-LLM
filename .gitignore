@@ -1,3 +1,24 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# Python / pytest cache
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+
+# Logs
+logs/*.jsonl
+
+# Cached embeddings
+data/evidence_embeddings.npy
+data/evidence_embeddings_meta.json
+
+# Local backup files
+README_old.md

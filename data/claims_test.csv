@@ -1,0 +1,21 @@
+claim,expected_label
+Retrieval augmented generation can improve factual reliability.,Supported
+Grounding answers in retrieved documents can improve factual reliability.,Supported
+Large language models can generate unsupported scientific claims.,Supported
+Human oversight is important for AI scientific reasoning.,Supported
+Human supervision is important when using AI systems for scientific reasoning.,Supported
+AI models trained on small biased datasets are not always reliable.,Supported
+AI models trained on small biased datasets are always reliable.,Refuted
+Small biased datasets always make AI models reliable.,Refuted
+Retrieval augmented generation cannot improve factual reliability.,Refuted
+Large language models never generate unsupported scientific claims.,Refuted
+Human oversight is not important for AI scientific reasoning.,Refuted
+Large language models always provide accurate scientific claims.,Refuted
+Do bananas improve AI model reliability?,Uncertain
+Does coffee reduce AI hallucination?,Uncertain
+Can vector databases reduce model latency?,Uncertain
+Does RAG improve dental diagnosis accuracy?,Uncertain
+Does human oversight eliminate all AI errors?,Uncertain
+Are transformers better than graph neural networks for biology?,Uncertain
+Is all scientific reasoning improved by AI systems?,Uncertain
+Does retrieved evidence guarantee every LLM answer is correct?,Uncertain

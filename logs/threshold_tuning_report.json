@@ -1,0 +1,1332 @@
+{
+  "timestamp": "2026-07-18T22:20:08.869034",
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "best_result": {
+    "final_score_threshold": 0.35,
+    "embedding_score_threshold": 0.3,
+    "total": 5,
+    "correct": 4,
+    "accuracy": 0.8,
+    "uncertain_count": 0,
+    "uncertain_rate": 0.0,
+    "case_results": [
+      {
+        "claim": "Are AI models always reliable on small biased datasets?",
+        "expected_label": "Refuted",
+        "predicted_label": "Refuted",
+        "correct": true,
+        "confidence": 0.8,
+        "abstention_reason": null
+      },
+      {
+        "claim": "Does retrieval augmented generation improve factual reliability?",
+        "expected_label": "Supported",
+        "predicted_label": "Supported",
+        "correct": true,
+        "confidence": 0.85,
+        "abstention_reason": null
+      },
+      {
+        "claim": "Can large language models generate unsupported scientific claims?",
+        "expected_label": "Supported",
+        "predicted_label": "Supported",
+        "correct": true,
+        "confidence": 0.8,
+        "abstention_reason": null
+      },
+      {
+        "claim": "Is human oversight important for AI scientific reasoning?",
+        "expected_label": "Supported",
+        "predicted_label": "Supported",
+        "correct": true,
+        "confidence": 0.82,
+        "abstention_reason": null
+      },
+      {
+        "claim": "Do bananas improve AI model reliability?",
+        "expected_label": "Uncertain",
+        "predicted_label": "Refuted",
+        "correct": false,
+        "confidence": 0.8,
+        "abstention_reason": null
+      }
+    ]
+  },
+  "all_results": [
+    {
+      "final_score_threshold": 0.35,
+      "embedding_score_threshold": 0.3,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.35,
+      "embedding_score_threshold": 0.35,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.35,
+      "embedding_score_threshold": 0.4,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.35,
+      "embedding_score_threshold": 0.45,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.35,
+      "embedding_score_threshold": 0.5,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.4,
+      "embedding_score_threshold": 0.3,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.4,
+      "embedding_score_threshold": 0.35,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.4,
+      "embedding_score_threshold": 0.4,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.4,
+      "embedding_score_threshold": 0.45,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.4,
+      "embedding_score_threshold": 0.5,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.45,
+      "embedding_score_threshold": 0.3,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.45,
+      "embedding_score_threshold": 0.35,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.45,
+      "embedding_score_threshold": 0.4,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.45,
+      "embedding_score_threshold": 0.45,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.45,
+      "embedding_score_threshold": 0.5,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.5,
+      "embedding_score_threshold": 0.3,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.5,
+      "embedding_score_threshold": 0.35,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.5,
+      "embedding_score_threshold": 0.4,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.5,
+      "embedding_score_threshold": 0.45,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.5,
+      "embedding_score_threshold": 0.5,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.55,
+      "embedding_score_threshold": 0.3,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.55,
+      "embedding_score_threshold": 0.35,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.55,
+      "embedding_score_threshold": 0.4,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.55,
+      "embedding_score_threshold": 0.45,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    },
+    {
+      "final_score_threshold": 0.55,
+      "embedding_score_threshold": 0.5,
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "uncertain_count": 0,
+      "uncertain_rate": 0.0,
+      "case_results": [
+        {
+          "claim": "Are AI models always reliable on small biased datasets?",
+          "expected_label": "Refuted",
+          "predicted_label": "Refuted",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Does retrieval augmented generation improve factual reliability?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.85,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Can large language models generate unsupported scientific claims?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.8,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Is human oversight important for AI scientific reasoning?",
+          "expected_label": "Supported",
+          "predicted_label": "Supported",
+          "correct": true,
+          "confidence": 0.82,
+          "abstention_reason": null
+        },
+        {
+          "claim": "Do bananas improve AI model reliability?",
+          "expected_label": "Uncertain",
+          "predicted_label": "Refuted",
+          "correct": false,
+          "confidence": 0.8,
+          "abstention_reason": null
+        }
+      ]
+    }
+  ]
+}

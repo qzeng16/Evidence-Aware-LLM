@@ -1,0 +1,1 @@
+claim,expected_label,predicted_label,correct,confidence,error_type,top_evidence_title,top_evidence_text,top_final_score,top_embedding_score,top_keyword_score,matched_rule,abstention_reason

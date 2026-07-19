@@ -1,5 +1,6 @@
-sentence-transformers
-scikit-learn
-pandas
 numpy
-torch
+scikit-learn
+sentence-transformers
+fastapi
+uvicorn
+pytest

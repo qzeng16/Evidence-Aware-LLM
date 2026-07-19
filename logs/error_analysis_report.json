@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-07-19T00:46:33.344514",
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "total_cases": 20,
+  "correct": 20,
+  "accuracy": 1.0,
+  "num_errors": 0,
+  "error_type_counts": {},
+  "errors": []
+}
