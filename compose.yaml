@@ -1,0 +1,32 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: evidence-llm-api:local
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      HF_HOME: /home/appuser/.cache/huggingface
+
+    volumes:
+      - huggingface-cache:/home/appuser/.cache/huggingface
+
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/openapi.json', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+
+    restart: unless-stopped
+
+volumes:
+  huggingface-cache:
