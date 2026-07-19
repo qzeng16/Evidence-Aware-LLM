@@ -1,5 +1,5 @@
-title,text
-AI Hallucination Risks,Large language models can generate unsupported scientific claims.
-Retrieval Augmented Generation,RAG can improve factual reliability by grounding answers in retrieved documents.
-Small Dataset Problem,AI models trained on small biased datasets are not always reliable.
-Human Oversight in AI Research,Human oversight is important when using AI systems for scientific reasoning.
+evidence_id,title,text,source_name,source_type,topic,source_url,published_at,retrieved_at
+seed-003,Small Dataset Problem,AI models trained on small biased datasets are not always reliable.,Portfolio seed corpus,other,dataset bias,,,
+seed-004,Human Oversight in AI Research,Human oversight is important when using AI systems for scientific reasoning.,Portfolio seed corpus,other,human oversight,,,
+seed-001,AI Hallucination Risks,Large language models can generate unsupported scientific claims.,Portfolio seed corpus,other,llm reliability,,,
+seed-002,Retrieval Augmented Generation,RAG can improve factual reliability by grounding answers in retrieved documents.,Portfolio seed corpus,other,retrieval augmented generation,,,
