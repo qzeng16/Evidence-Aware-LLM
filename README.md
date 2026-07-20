@@ -507,3 +507,44 @@ For pushes and pull requests targeting `main`, the workflow:
 2. Builds the Docker image on a Linux runner without publishing it.
 
 The Docker build job only runs after the unit tests pass.
+
+<!-- verifier-mode-configuration -->
+
+## Verifier Mode Configuration
+
+The API supports configuration through the `VERIFIER_MODE` environment
+variable.
+
+Available values:
+
+- `rule_only`: use the implemented rule-based verifier.
+- `llm_only`: reserved for the LLM verifier.
+- `hybrid`: reserved for combined rule and LLM verification.
+
+The current working default is:
+
+```text
+VERIFIER_MODE=rule_only
+```
+
+To create a local configuration file:
+
+```bash
+cp .env.example .env
+```
+
+Docker Compose automatically passes the configured mode into the API
+container:
+
+```bash
+docker compose up --build --detach
+```
+
+Check the active configuration:
+
+```bash
+curl http://localhost:8000/health
+```
+
+Until the LLM verifier is implemented, `llm_only` and `hybrid` are reported
+as unavailable instead of silently falling back to `rule_only`.

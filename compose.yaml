@@ -11,6 +11,7 @@ services:
 
     environment:
       HF_HOME: /home/appuser/.cache/huggingface
+      VERIFIER_MODE: ${VERIFIER_MODE:-rule_only}
 
     volumes:
       - huggingface-cache:/home/appuser/.cache/huggingface
