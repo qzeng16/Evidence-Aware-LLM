@@ -15,6 +15,7 @@ service on Hugging Face Spaces.
 - **Swagger UI:** https://qzeng16-evidence-aware-llm-api.hf.space/docs
 - **Health endpoint:** https://qzeng16-evidence-aware-llm-api.hf.space/health
 - **Verification endpoint:** `POST /verify`
+- **Metrics endpoint:** [GET /metrics](https://qzeng16-evidence-aware-llm-api.hf.space/metrics)
 - **Deployment mode:** `VERIFIER_MODE=rule_only`
 - **CI/CD:** GitHub Actions runs the complete test suite and Docker build before automatically synchronizing `main` to Hugging Face Spaces.
 

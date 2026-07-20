@@ -5,3 +5,4 @@ fastapi
 uvicorn
 pytest
 openai==2.46.0
+prometheus-client==0.25.0

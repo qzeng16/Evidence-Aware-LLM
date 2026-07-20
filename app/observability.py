@@ -17,6 +17,7 @@ from starlette.types import (
     Send,
 )
 
+from app.metrics import record_http_request
 from app.services import get_active_verifier_mode
 
 
@@ -225,6 +226,13 @@ class RequestLoggingMiddleware:
                 3,
             )
 
+            record_http_request(
+                method=method,
+                path=path,
+                status_code=500,
+                latency_ms=latency_ms,
+            )
+
             emit_request_event(
                 "http_request_failed",
                 level=logging.ERROR,
@@ -250,6 +258,13 @@ class RequestLoggingMiddleware:
             )
             * 1000,
             3,
+        )
+
+        record_http_request(
+            method=method,
+            path=path,
+            status_code=status_code,
+            latency_ms=latency_ms,
         )
 
         emit_request_event(
