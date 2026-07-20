@@ -1,3 +1,9 @@
+---
+sdk: docker
+app_port: 8000
+license: apache-2.0
+---
+
 # Evidence-Aware LLM Claim Verification System
 
 [![CI](https://github.com/qzeng16/Evidence-Aware-LLM/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/qzeng16/Evidence-Aware-LLM/actions/workflows/ci.yml)
