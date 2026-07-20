@@ -704,3 +704,61 @@ VERIFIER_MODE=rule_only
 
 The `llm_only` and `hybrid` service modes remain unavailable until a real
 provider client and production fallback behavior are connected.
+
+<!-- hybrid-verifier-policy -->
+
+## Hybrid Verification Mode
+
+Set the following environment variable to enable hybrid verification:
+
+```text
+VERIFIER_MODE=hybrid
+```
+
+The hybrid verifier uses a cost-aware and fault-tolerant decision policy:
+
+1. It first runs the deterministic rule verifier.
+2. A decisive rule result with confidence at or above `0.95` is returned
+   immediately without calling the LLM.
+3. Lower-confidence or uncertain rule results are sent to the LLM judge.
+4. Agreement between decisive rule and LLM results increases confidence.
+5. If only one verifier is decisive, that result is retained with reduced
+   confidence.
+6. Conflicting decisive results return `Uncertain`.
+7. Expected LLM failures automatically fall back to the rule result.
+
+Fallback is supported for:
+
+- OpenAI timeouts;
+- rate limits;
+- connection failures;
+- provider request failures;
+- malformed structured outputs;
+- invalid evidence citations;
+- invalid LLM judge responses.
+
+If the rule verifier is also uncertain when the LLM fails, the hybrid
+verifier returns:
+
+```text
+label=Uncertain
+abstention_reason=llm_unavailable_and_rule_uncertain
+```
+
+All hybrid responses use the unified `VerificationResult` contract and
+report:
+
+```text
+verifier_type=hybrid
+```
+
+The three supported modes are:
+
+```text
+rule_only
+llm_only
+hybrid
+```
+
+This project is a portfolio-grade evidence verification demo. It should not
+be presented as a general-purpose or production fact-checking authority.

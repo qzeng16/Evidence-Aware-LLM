@@ -6,11 +6,19 @@ from sentence_transformers import SentenceTransformer
 
 from app.config import (
     DEFAULT_VERIFIER_MODE,
+    HYBRID_MODE,
+    LLM_ONLY_MODE,
     RULE_ONLY_MODE,
     AppConfig,
     load_app_config,
 )
+from app.llm_clients import (
+    OPENAI_PROVIDER,
+    OpenAIResponsesClient,
+)
 from app.verifiers import (
+    HybridVerifier,
+    LLMVerifier,
     RuleVerifier,
     Verifier,
 )
@@ -75,29 +83,91 @@ def get_configured_verifier_mode() -> str:
     return config.verifier_mode
 
 
+def is_llm_verifier_available() -> bool:
+    """Return whether an LLM backend is currently active."""
+
+    active_verifier = get_active_verifier()
+
+    if active_verifier is None:
+        return False
+
+    return active_verifier.verifier_type.value in {
+        "llm",
+        "hybrid",
+    }
+
+
+def is_openai_api_key_configured() -> bool:
+    """Return whether an OpenAI key exists without exposing it."""
+
+    config = get_app_config()
+
+    return bool(
+        config is not None
+        and config.has_openai_api_key
+    )
+
+
+def get_llm_provider_name() -> Optional[str]:
+    """Return the configured LLM provider name."""
+
+    config = get_app_config()
+
+    if (
+        config is None
+        or not config.uses_llm_verifier
+    ):
+        return None
+
+    return OPENAI_PROVIDER
+
+
+def get_llm_model_name() -> Optional[str]:
+    """Return the configured LLM model name."""
+
+    config = get_app_config()
+
+    if (
+        config is None
+        or not config.uses_llm_verifier
+    ):
+        return None
+
+    return config.openai_model
+
 def is_service_ready() -> bool:
-    """Return whether the service can process requests."""
+    """Return whether the configured verifier can process requests."""
+
+    config = get_app_config()
+    active_verifier = get_active_verifier()
+
+    if config is None:
+        return False
+
+    if active_verifier is None:
+        return False
+
+    if (
+        system_state.get("initialization_error")
+        is not None
+    ):
+        return False
 
     required_resource_names = [
         "evidence_db",
-        "verification_rules",
         "model",
         "evidence_embeddings",
-        "config",
-        "active_verifier",
     ]
 
-    resources_are_ready = all(
+    if config.uses_rule_verifier:
+        required_resource_names.append(
+            "verification_rules"
+        )
+
+    return all(
         system_state.get(resource_name) is not None
         for resource_name in required_resource_names
     )
-
-    return (
-        system_state.get("initialization_error")
-        is None
-        and resources_are_ready
-    )
-
 
 def get_active_verifier_mode() -> Optional[str]:
     """Return the verifier backend currently handling requests."""
@@ -111,7 +181,7 @@ def get_active_verifier_mode() -> Optional[str]:
 
 
 def get_service_status() -> Dict[str, Any]:
-    """Return readiness and verifier-mode information."""
+    """Return safe readiness and verifier metadata."""
 
     return {
         "status": (
@@ -123,12 +193,18 @@ def get_service_status() -> Dict[str, Any]:
         "active_verifier_mode": (
             get_active_verifier_mode()
         ),
-        "llm_verifier_available": False,
+        "llm_verifier_available": (
+            is_llm_verifier_available()
+        ),
+        "llm_provider": get_llm_provider_name(),
+        "llm_model": get_llm_model_name(),
+        "openai_api_key_configured": (
+            is_openai_api_key_configured()
+        ),
         "initialization_error": system_state.get(
             "initialization_error"
         ),
     }
-
 
 def initialize_service() -> None:
     """Load resources and initialize the configured verifier."""
@@ -143,13 +219,14 @@ def initialize_service() -> None:
         f"{config.verifier_mode}"
     )
 
-    if config.verifier_mode != RULE_ONLY_MODE:
+    if (
+        config.uses_llm_verifier
+        and not config.has_openai_api_key
+    ):
         error_message = (
-            f"Verifier mode '{config.verifier_mode}' "
-            "is configured, but the LLM verifier has "
-            "not been connected yet. Use "
-            "VERIFIER_MODE=rule_only until the LLM "
-            "verifier implementation is available."
+            "OPENAI_API_KEY is required when "
+            "the configured verifier mode uses "
+            "an LLM backend."
         )
 
         system_state[
@@ -169,11 +246,14 @@ def initialize_service() -> None:
         verifier.DATA_PATH
     )
 
-    print("Loading verification rules...")
+    verification_rules = None
 
-    verification_rules = verifier.load_rules(
-        verifier.RULES_PATH
-    )
+    if config.uses_rule_verifier:
+        print("Loading verification rules...")
+
+        verification_rules = verifier.load_rules(
+            verifier.RULES_PATH
+        )
 
     print(
         "Loading embedding model: "
@@ -195,12 +275,82 @@ def initialize_service() -> None:
         )
     )
 
-    active_verifier = RuleVerifier(
-        evidence_db=evidence_db,
-        verification_rules=verification_rules,
-        model=model,
-        evidence_embeddings=evidence_embeddings,
-    )
+    rule_verifier = None
+    llm_verifier = None
+
+    if config.uses_rule_verifier:
+        rule_verifier = RuleVerifier(
+            evidence_db=evidence_db,
+            verification_rules=(
+                verification_rules
+            ),
+            model=model,
+            evidence_embeddings=(
+                evidence_embeddings
+            ),
+        )
+
+    if config.uses_llm_verifier:
+        llm_client = OpenAIResponsesClient(
+            api_key=(
+                config.openai_api_key
+                or ""
+            ),
+            model=config.openai_model,
+            timeout_seconds=(
+                config.openai_timeout_seconds
+            ),
+            max_retries=(
+                config.openai_max_retries
+            ),
+        )
+
+        llm_verifier = LLMVerifier(
+            evidence_db=evidence_db,
+            model=model,
+            evidence_embeddings=(
+                evidence_embeddings
+            ),
+            client=llm_client,
+        )
+
+    if config.verifier_mode == RULE_ONLY_MODE:
+        if rule_verifier is None:
+            raise RuntimeError(
+                "RuleVerifier was not initialized."
+            )
+
+        active_verifier = rule_verifier
+
+    elif config.verifier_mode == LLM_ONLY_MODE:
+        if llm_verifier is None:
+            raise RuntimeError(
+                "LLMVerifier was not initialized."
+            )
+
+        active_verifier = llm_verifier
+
+    elif config.verifier_mode == HYBRID_MODE:
+        if (
+            rule_verifier is None
+            or llm_verifier is None
+        ):
+            raise RuntimeError(
+                "Hybrid mode requires both rule "
+                "and LLM verifiers."
+            )
+
+        active_verifier = HybridVerifier(
+            rule_verifier=rule_verifier,
+            llm_verifier=llm_verifier,
+        )
+
+    else:
+        raise RuntimeError(
+            "No verifier implementation is "
+            "available for mode "
+            f"'{config.verifier_mode}'."
+        )
 
     system_state["evidence_db"] = evidence_db
     system_state[
@@ -219,11 +369,10 @@ def initialize_service() -> None:
         f"{active_verifier.verifier_type.value}"
     )
 
-
 def attach_execution_metadata(
     response: Dict[str, Any],
 ) -> Dict[str, Any]:
-    """Attach verifier execution details to an API response."""
+    """Attach safe execution metadata to an API response."""
 
     metadata = response.get("metadata")
 
@@ -238,14 +387,24 @@ def attach_execution_metadata(
             "active_verifier_mode": (
                 get_active_verifier_mode()
             ),
-            "llm_verifier_available": False,
+            "llm_verifier_available": (
+                is_llm_verifier_available()
+            ),
+            "llm_provider": (
+                get_llm_provider_name()
+            ),
+            "llm_model": (
+                get_llm_model_name()
+            ),
+            "openai_api_key_configured": (
+                is_openai_api_key_configured()
+            ),
         }
     )
 
     response["metadata"] = metadata
 
     return response
-
 
 def verify_claim_service(
     claim: str,

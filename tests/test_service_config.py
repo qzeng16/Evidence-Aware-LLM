@@ -103,33 +103,6 @@ def test_rule_only_service_initializes(
     assert status["initialization_error"] is None
 
 
-def test_unimplemented_hybrid_mode_is_not_silent(
-    monkeypatch: pytest.MonkeyPatch,
-):
-    """Hybrid mode should not silently execute rule-only."""
-
-    monkeypatch.setattr(
-        services,
-        "load_app_config",
-        lambda: AppConfig(
-            verifier_mode=HYBRID_MODE
-        ),
-    )
-
-    services.initialize_service()
-
-    status = services.get_service_status()
-
-    assert services.is_service_ready() is False
-    assert status["status"] == (
-        "loading_or_unavailable"
-    )
-    assert status["verifier_mode"] == HYBRID_MODE
-    assert status["active_verifier_mode"] is None
-    assert status["llm_verifier_available"] is False
-    assert "not been connected" in (
-        status["initialization_error"]
-    )
 
 
 def test_verify_response_contains_mode_metadata(
