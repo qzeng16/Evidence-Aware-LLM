@@ -10,6 +10,7 @@ license: apache-2.0
 The rule-based API is publicly deployed as a Dockerized FastAPI
 service on Hugging Face Spaces.
 
+- **Live demo:** [Open the interactive verifier](https://qzeng16-evidence-aware-llm-api.hf.space/)
 - **API base URL:** `https://qzeng16-evidence-aware-llm-api.hf.space`
 - **Swagger UI:** https://qzeng16-evidence-aware-llm-api.hf.space/docs
 - **Health endpoint:** https://qzeng16-evidence-aware-llm-api.hf.space/health

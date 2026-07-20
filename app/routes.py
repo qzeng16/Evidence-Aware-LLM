@@ -1,22 +1,37 @@
 """FastAPI route definitions."""
 
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
+from fastapi.responses import HTMLResponse
 
 from app.schemas import VerifyRequest, VerifyResponse
 from app.services import (
     get_service_status,
     verify_claim_service,
 )
+from app.web import DEMO_HTML
 
 
 router = APIRouter()
 
 
-@router.get("/")
-def root() -> Dict[str, str]:
-    """Return basic API navigation information."""
+@router.get("/", response_model=None)
+def root(
+    request: Request,
+) -> Union[HTMLResponse, Dict[str, str]]:
+    """Serve the browser demo while preserving JSON API navigation."""
+
+    accept_header = request.headers.get(
+        "accept",
+        "",
+    ).lower()
+
+    if "text/html" in accept_header:
+        return HTMLResponse(
+            content=DEMO_HTML,
+            status_code=200,
+        )
 
     return {
         "message": (

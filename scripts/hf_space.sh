@@ -72,6 +72,52 @@ def reject_secrets(value: object) -> None:
 
 
 print("========================================")
+print("Checking public demo page")
+print("========================================")
+
+demo_request = urllib.request.Request(
+    f"{base_url}/",
+    headers={
+        "Accept": "text/html",
+    },
+)
+
+with urllib.request.urlopen(
+    demo_request,
+    timeout=180,
+) as response:
+    if response.status != 200:
+        raise SystemExit(
+            f"/ returned HTTP {response.status}"
+        )
+
+    demo_html = response.read().decode("utf-8")
+
+required_demo_content = (
+    "Evidence-Aware Claim Verification",
+    'id="verify-form"',
+    'id="claim"',
+    'id="submit-button"',
+    'requestJson("/health"',
+    'requestJson("/verify"',
+)
+
+missing_demo_content = [
+    value
+    for value in required_demo_content
+    if value not in demo_html
+]
+
+if missing_demo_content:
+    raise SystemExit(
+        "Public demo validation failed. Missing:\n- "
+        + "\n- ".join(missing_demo_content)
+    )
+
+print("Public demo page returned HTTP 200")
+
+print()
+print("========================================")
 print("Checking public /health")
 print("========================================")
 
