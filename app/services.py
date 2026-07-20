@@ -10,6 +10,10 @@ from app.config import (
     AppConfig,
     load_app_config,
 )
+from app.verifiers import (
+    RuleVerifier,
+    Verifier,
+)
 import layer0_verifier as verifier
 
 
@@ -19,22 +23,20 @@ system_state: Dict[str, Any] = {
     "model": None,
     "evidence_embeddings": None,
     "config": None,
+    "active_verifier": None,
     "initialization_error": None,
 }
 
 
 def reset_service_state() -> None:
-    """Reset all in-memory service resources.
-
-    This function is primarily useful for isolated tests and controlled
-    service reinitialization.
-    """
+    """Reset all in-memory service resources."""
 
     system_state["evidence_db"] = None
     system_state["verification_rules"] = None
     system_state["model"] = None
     system_state["evidence_embeddings"] = None
     system_state["config"] = None
+    system_state["active_verifier"] = None
     system_state["initialization_error"] = None
 
 
@@ -49,6 +51,19 @@ def get_app_config() -> Optional[AppConfig]:
     return None
 
 
+def get_active_verifier() -> Optional[Verifier]:
+    """Return the initialized verifier backend."""
+
+    active_verifier = system_state.get(
+        "active_verifier"
+    )
+
+    if active_verifier is None:
+        return None
+
+    return active_verifier
+
+
 def get_configured_verifier_mode() -> str:
     """Return the configured verifier mode."""
 
@@ -61,32 +76,38 @@ def get_configured_verifier_mode() -> str:
 
 
 def is_service_ready() -> bool:
-    """Return whether all rule-verifier resources are initialized."""
+    """Return whether the service can process requests."""
 
-    required_resources = [
-        system_state.get("evidence_db"),
-        system_state.get("verification_rules"),
-        system_state.get("model"),
-        system_state.get("evidence_embeddings"),
-        system_state.get("config"),
+    required_resource_names = [
+        "evidence_db",
+        "verification_rules",
+        "model",
+        "evidence_embeddings",
+        "config",
+        "active_verifier",
     ]
 
+    resources_are_ready = all(
+        system_state.get(resource_name) is not None
+        for resource_name in required_resource_names
+    )
+
     return (
-        system_state.get("initialization_error") is None
-        and all(
-            resource is not None
-            for resource in required_resources
-        )
+        system_state.get("initialization_error")
+        is None
+        and resources_are_ready
     )
 
 
 def get_active_verifier_mode() -> Optional[str]:
-    """Return the verifier mode currently executing requests."""
+    """Return the verifier backend currently handling requests."""
 
-    if not is_service_ready():
+    active_verifier = get_active_verifier()
+
+    if active_verifier is None:
         return None
 
-    return RULE_ONLY_MODE
+    return active_verifier.verifier_type.value
 
 
 def get_service_status() -> Dict[str, Any]:
@@ -99,7 +120,9 @@ def get_service_status() -> Dict[str, Any]:
             else "loading_or_unavailable"
         ),
         "verifier_mode": get_configured_verifier_mode(),
-        "active_verifier_mode": get_active_verifier_mode(),
+        "active_verifier_mode": (
+            get_active_verifier_mode()
+        ),
         "llm_verifier_available": False,
         "initialization_error": system_state.get(
             "initialization_error"
@@ -108,7 +131,7 @@ def get_service_status() -> Dict[str, Any]:
 
 
 def initialize_service() -> None:
-    """Load configuration and initialize verification resources."""
+    """Load resources and initialize the configured verifier."""
 
     reset_service_state()
 
@@ -122,35 +145,49 @@ def initialize_service() -> None:
 
     if config.verifier_mode != RULE_ONLY_MODE:
         error_message = (
-            f"Verifier mode '{config.verifier_mode}' is configured, "
-            "but the LLM verifier has not been connected yet. "
-            "Use VERIFIER_MODE=rule_only until the LLM verifier "
-            "implementation is available."
+            f"Verifier mode '{config.verifier_mode}' "
+            "is configured, but the LLM verifier has "
+            "not been connected yet. Use "
+            "VERIFIER_MODE=rule_only until the LLM "
+            "verifier implementation is available."
         )
 
-        system_state["initialization_error"] = error_message
-        print(f"Service initialization paused: {error_message}")
+        system_state[
+            "initialization_error"
+        ] = error_message
+
+        print(
+            "Service initialization paused: "
+            f"{error_message}"
+        )
+
         return
 
     print("Loading evidence database...")
+
     evidence_db = verifier.load_evidence(
         verifier.DATA_PATH
     )
 
     print("Loading verification rules...")
+
     verification_rules = verifier.load_rules(
         verifier.RULES_PATH
     )
 
     print(
-        f"Loading embedding model: "
+        "Loading embedding model: "
         f"{verifier.MODEL_NAME}"
     )
+
     model = SentenceTransformer(
         verifier.MODEL_NAME
     )
 
-    print("Loading or building evidence embeddings...")
+    print(
+        "Loading or building evidence embeddings..."
+    )
+
     evidence_embeddings = (
         verifier.get_or_build_evidence_embeddings(
             evidence_db,
@@ -158,14 +195,29 @@ def initialize_service() -> None:
         )
     )
 
-    system_state["evidence_db"] = evidence_db
-    system_state["verification_rules"] = verification_rules
-    system_state["model"] = model
-    system_state["evidence_embeddings"] = (
-        evidence_embeddings
+    active_verifier = RuleVerifier(
+        evidence_db=evidence_db,
+        verification_rules=verification_rules,
+        model=model,
+        evidence_embeddings=evidence_embeddings,
     )
 
-    print("API system ready in rule_only mode.")
+    system_state["evidence_db"] = evidence_db
+    system_state[
+        "verification_rules"
+    ] = verification_rules
+    system_state["model"] = model
+    system_state[
+        "evidence_embeddings"
+    ] = evidence_embeddings
+    system_state[
+        "active_verifier"
+    ] = active_verifier
+
+    print(
+        "API system ready with active verifier: "
+        f"{active_verifier.verifier_type.value}"
+    )
 
 
 def attach_execution_metadata(
@@ -198,50 +250,63 @@ def attach_execution_metadata(
 def verify_claim_service(
     claim: str,
 ) -> Dict[str, Any]:
-    """Validate and verify a claim using the active verifier."""
+    """Validate and verify a claim through the active backend."""
 
     if not is_service_ready():
         error_message = (
-            system_state.get("initialization_error")
+            system_state.get(
+                "initialization_error"
+            )
             or "Service is not ready."
         )
 
         response = verifier.build_error_response(
             error_message
         )
-        response = attach_execution_metadata(response)
+        response = attach_execution_metadata(
+            response
+        )
         verifier.save_log(response)
 
         return response
 
-    is_valid, error_message = verifier.validate_claim(
-        claim
+    is_valid, error_message = (
+        verifier.validate_claim(claim)
     )
 
     if not is_valid:
         response = verifier.build_error_response(
             error_message
         )
-        response = attach_execution_metadata(response)
+        response = attach_execution_metadata(
+            response
+        )
         verifier.save_log(response)
 
         return response
 
     try:
-        result = verifier.verify_claim(
-            claim=claim,
-            evidence_db=system_state["evidence_db"],
-            verification_rules=system_state[
-                "verification_rules"
-            ],
-            model=system_state["model"],
-            evidence_embeddings=system_state[
-                "evidence_embeddings"
-            ],
+        active_verifier = get_active_verifier()
+
+        if active_verifier is None:
+            raise RuntimeError(
+                "No active verifier is available."
+            )
+
+        verification_run = (
+            active_verifier.verify(claim)
+        )
+
+        legacy_result = (
+            verification_run.to_legacy_dict()
         )
 
         response = verifier.build_success_response(
-            result
+            legacy_result
+        )
+
+        response["data"]["verification"] = (
+            verification_run.result.to_dict()
         )
 
     except Exception as error:
@@ -249,7 +314,9 @@ def verify_claim_service(
             str(error)
         )
 
-    response = attach_execution_metadata(response)
+    response = attach_execution_metadata(
+        response
+    )
     verifier.save_log(response)
 
     return response

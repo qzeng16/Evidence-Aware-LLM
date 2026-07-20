@@ -10,6 +10,7 @@ from app.config import (
     RULE_ONLY_MODE,
     AppConfig,
 )
+from app.verification_result import VerifierType
 import app.services as services
 
 
@@ -96,7 +97,7 @@ def test_rule_only_service_initializes(
     assert status["verifier_mode"] == RULE_ONLY_MODE
     assert (
         status["active_verifier_mode"]
-        == RULE_ONLY_MODE
+        == VerifierType.RULE.value
     )
     assert status["llm_verifier_available"] is False
     assert status["initialization_error"] is None
@@ -171,7 +172,7 @@ def test_verify_response_contains_mode_metadata(
     )
     assert (
         response["metadata"]["active_verifier_mode"]
-        == RULE_ONLY_MODE
+        == VerifierType.RULE.value
     )
     assert (
         response["metadata"][

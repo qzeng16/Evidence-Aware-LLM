@@ -420,6 +420,7 @@ def verify_claim(
             "label": "Uncertain",
             "confidence": 0.3,
             "evidence": [],
+            "matched_evidence_ids": [],
             "matched_rule": None,
             "abstention_reason": "No relevant evidence found."
         }
@@ -472,11 +473,26 @@ def verify_claim(
         }
 
         if len(candidate_labels) > 1:
+            matched_evidence_ids = list(
+                dict.fromkeys(
+                    candidate["evidence"].get(
+                        "evidence_id",
+                        "",
+                    )
+                    for candidate in verification_candidates
+                    if candidate["evidence"].get(
+                        "evidence_id",
+                        "",
+                    )
+                )
+            )
+
             return {
                 "claim": claim,
                 "label": "Uncertain",
                 "confidence": 0.45,
                 "evidence": evidence_results,
+                "matched_evidence_ids": matched_evidence_ids,
                 "matched_rule": None,
                 "abstention_reason": (
                     "Retrieved evidence produced conflicting "
@@ -492,11 +508,25 @@ def verify_claim(
             )
         )
 
+        selected_evidence_id = (
+            selected_candidate["evidence"].get(
+                "evidence_id",
+                "",
+            )
+        )
+
+        matched_evidence_ids = (
+            [selected_evidence_id]
+            if selected_evidence_id
+            else []
+        )
+
         return {
             "claim": claim,
             "label": selected_candidate["label"],
             "confidence": selected_candidate["confidence"],
             "evidence": evidence_results,
+            "matched_evidence_ids": matched_evidence_ids,
             "matched_rule": selected_candidate["matched_rule"],
             "abstention_reason": None
         }
@@ -527,6 +557,7 @@ def verify_claim(
         "label": "Uncertain",
         "confidence": confidence,
         "evidence": evidence_results,
+        "matched_evidence_ids": [],
         "matched_rule": None,
         "abstention_reason": abstention_reason
     }

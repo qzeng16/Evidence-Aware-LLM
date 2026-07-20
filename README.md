@@ -548,3 +548,90 @@ curl http://localhost:8000/health
 
 Until the LLM verifier is implemented, `llm_only` and `hybrid` are reported
 as unavailable instead of silently falling back to `rule_only`.
+
+<!-- unified-verifier-interface -->
+
+## Unified Verifier Interface
+
+The verification layer uses a shared interface so rule-based, LLM-based,
+and hybrid verifiers can be called through the same service workflow.
+
+```text
+POST /verify
+    |
+    v
+app.services
+    |
+    v
+active_verifier.verify(claim)
+    |
+    v
+VerificationRun
+    |-- result: VerificationResult
+    `-- evidence: retrieved evidence records
+```
+
+### VerificationResult
+
+Every verifier returns the same decision structure:
+
+```json
+{
+  "label": "Supported",
+  "confidence": 0.86,
+  "reason": "The retrieved evidence supports the claim.",
+  "verifier_type": "rule",
+  "matched_evidence_ids": [
+    "seed-002"
+  ],
+  "matched_rule": "supports_rag_improves_reliability",
+  "abstention_reason": null
+}
+```
+
+Supported labels:
+
+- `Supported`
+- `Refuted`
+- `Uncertain`
+
+Supported verifier types:
+
+- `rule`
+- `llm`
+- `hybrid`
+
+### Backward-Compatible API Response
+
+The API temporarily returns both result formats:
+
+```text
+data.prediction
+```
+
+contains the original label and confidence structure.
+
+```text
+data.verification
+```
+
+contains the unified verification result.
+
+This preserves compatibility with existing clients while allowing future
+LLM and hybrid verifier implementations to use the same response contract.
+
+### Configuration Mode vs Active Verifier
+
+The health endpoint reports two related but different fields:
+
+```json
+{
+  "verifier_mode": "rule_only",
+  "active_verifier_mode": "rule"
+}
+```
+
+`verifier_mode` is the configured execution mode.
+
+`active_verifier_mode` identifies the verifier backend currently processing
+requests.
