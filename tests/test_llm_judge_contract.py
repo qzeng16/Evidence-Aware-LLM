@@ -197,3 +197,29 @@ def test_json_schema_is_strict():
         "reason",
         "evidence_ids",
     }
+
+
+def test_provider_schema_uses_supported_strict_shape():
+    """The provider schema should avoid unsupported keywords."""
+
+    serialized_schema = str(
+        LLM_JUDGE_JSON_SCHEMA
+    )
+
+    assert "minLength" not in serialized_schema
+    assert "uniqueItems" not in serialized_schema
+
+    assert (
+        LLM_JUDGE_JSON_SCHEMA[
+            "additionalProperties"
+        ]
+        is False
+    )
+
+    assert set(
+        LLM_JUDGE_JSON_SCHEMA["required"]
+    ) == set(
+        LLM_JUDGE_JSON_SCHEMA[
+            "properties"
+        ]
+    )

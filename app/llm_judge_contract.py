@@ -43,15 +43,12 @@ LLM_JUDGE_JSON_SCHEMA: Dict[str, Any] = {
         },
         "reason": {
             "type": "string",
-            "minLength": 1,
         },
         "evidence_ids": {
             "type": "array",
             "items": {
                 "type": "string",
-                "minLength": 1,
             },
-            "uniqueItems": True,
         },
     },
 }

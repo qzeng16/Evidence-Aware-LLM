@@ -12,6 +12,10 @@ services:
     environment:
       HF_HOME: /home/appuser/.cache/huggingface
       VERIFIER_MODE: ${VERIFIER_MODE:-rule_only}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5-mini}
+      OPENAI_TIMEOUT_SECONDS: ${OPENAI_TIMEOUT_SECONDS:-30}
+      OPENAI_MAX_RETRIES: ${OPENAI_MAX_RETRIES:-2}
 
     volumes:
       - huggingface-cache:/home/appuser/.cache/huggingface

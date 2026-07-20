@@ -15,6 +15,11 @@ from app.llm_clients.fake import (
     FakeLLMClient,
     FakeLLMClientCall,
 )
+from app.llm_clients.openai_responses import (
+    OPENAI_PROVIDER,
+    OPENAI_RESPONSE_FORMAT_NAME,
+    OpenAIResponsesClient,
+)
 
 
 __all__ = [
@@ -24,9 +29,12 @@ __all__ = [
     "RATE_LIMIT_ERROR",
     "REQUEST_TIMEOUT_ERROR",
     "FAKE_RESPONSE_EXHAUSTED_ERROR",
+    "OPENAI_PROVIDER",
+    "OPENAI_RESPONSE_FORMAT_NAME",
     "LLMClient",
     "LLMClientError",
     "LLMClientResponse",
     "FakeLLMClient",
     "FakeLLMClientCall",
+    "OpenAIResponsesClient",
 ]

@@ -1,23 +1,29 @@
-"""Application configuration.
-
-This module defines the verifier execution modes used by the API.
-
-The default mode remains ``rule_only`` so the existing application
-continues to work without an external LLM provider or API key.
-"""
+"""Validated application configuration."""
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Mapping, Optional
 
 
 VERIFIER_MODE_ENV = "VERIFIER_MODE"
+
+OPENAI_API_KEY_ENV = "OPENAI_API_KEY"
+OPENAI_MODEL_ENV = "OPENAI_MODEL"
+OPENAI_TIMEOUT_SECONDS_ENV = (
+    "OPENAI_TIMEOUT_SECONDS"
+)
+OPENAI_MAX_RETRIES_ENV = "OPENAI_MAX_RETRIES"
+
 
 RULE_ONLY_MODE = "rule_only"
 LLM_ONLY_MODE = "llm_only"
 HYBRID_MODE = "hybrid"
 
 DEFAULT_VERIFIER_MODE = RULE_ONLY_MODE
+DEFAULT_OPENAI_MODEL = "gpt-5-mini"
+DEFAULT_OPENAI_TIMEOUT_SECONDS = 30.0
+DEFAULT_OPENAI_MAX_RETRIES = 2
+
 
 SUPPORTED_VERIFIER_MODES = {
     RULE_ONLY_MODE,
@@ -36,9 +42,24 @@ class AppConfig:
 
     verifier_mode: str = DEFAULT_VERIFIER_MODE
 
+    openai_api_key: Optional[str] = field(
+        default=None,
+        repr=False,
+    )
+
+    openai_model: str = DEFAULT_OPENAI_MODEL
+
+    openai_timeout_seconds: float = (
+        DEFAULT_OPENAI_TIMEOUT_SECONDS
+    )
+
+    openai_max_retries: int = (
+        DEFAULT_OPENAI_MAX_RETRIES
+    )
+
     @property
     def uses_rule_verifier(self) -> bool:
-        """Return whether the configured mode uses rule verification."""
+        """Return whether rule verification is enabled."""
 
         return self.verifier_mode in {
             RULE_ONLY_MODE,
@@ -47,31 +68,33 @@ class AppConfig:
 
     @property
     def uses_llm_verifier(self) -> bool:
-        """Return whether the configured mode uses LLM verification."""
+        """Return whether LLM verification is enabled."""
 
         return self.verifier_mode in {
             LLM_ONLY_MODE,
             HYBRID_MODE,
         }
 
+    @property
+    def has_openai_api_key(self) -> bool:
+        """Return whether an API key was configured."""
+
+        return self.openai_api_key is not None
+
 
 def normalize_verifier_mode(
     value: Optional[str],
 ) -> str:
-    """Normalize and validate a verifier mode value.
-
-    Empty or missing values use the safe default ``rule_only``.
-
-    Raises:
-        ConfigurationError: If the supplied mode is unsupported.
-    """
+    """Normalize and validate the verifier mode."""
 
     if value is None or not value.strip():
         return DEFAULT_VERIFIER_MODE
 
     normalized_mode = value.strip().lower()
 
-    if normalized_mode not in SUPPORTED_VERIFIER_MODES:
+    if normalized_mode not in (
+        SUPPORTED_VERIFIER_MODES
+    ):
         supported_modes = ", ".join(
             sorted(SUPPORTED_VERIFIER_MODES)
         )
@@ -84,23 +107,136 @@ def normalize_verifier_mode(
     return normalized_mode
 
 
+def normalize_openai_api_key(
+    value: Optional[str],
+) -> Optional[str]:
+    """Normalize an optional OpenAI API key."""
+
+    if value is None:
+        return None
+
+    normalized_value = value.strip()
+
+    if not normalized_value:
+        return None
+
+    return normalized_value
+
+
+def normalize_openai_model(
+    value: Optional[str],
+) -> str:
+    """Normalize the configured OpenAI model."""
+
+    if value is None or not value.strip():
+        return DEFAULT_OPENAI_MODEL
+
+    return value.strip()
+
+
+def normalize_positive_float(
+    value: Optional[str],
+    default: float,
+    field_name: str,
+) -> float:
+    """Normalize a positive floating-point setting."""
+
+    if value is None or not value.strip():
+        return default
+
+    try:
+        normalized_value = float(value)
+    except (TypeError, ValueError) as error:
+        raise ConfigurationError(
+            f"{field_name} must be a number."
+        ) from error
+
+    if normalized_value <= 0:
+        raise ConfigurationError(
+            f"{field_name} must be greater than zero."
+        )
+
+    return normalized_value
+
+
+def normalize_nonnegative_integer(
+    value: Optional[str],
+    default: int,
+    field_name: str,
+) -> int:
+    """Normalize a nonnegative integer setting."""
+
+    if value is None or not value.strip():
+        return default
+
+    try:
+        normalized_value = int(value)
+    except (TypeError, ValueError) as error:
+        raise ConfigurationError(
+            f"{field_name} must be an integer."
+        ) from error
+
+    if normalized_value < 0:
+        raise ConfigurationError(
+            f"{field_name} cannot be negative."
+        )
+
+    return normalized_value
+
+
 def load_app_config(
-    environ: Optional[Mapping[str, str]] = None,
+    environ: Optional[
+        Mapping[str, str]
+    ] = None,
 ) -> AppConfig:
-    """Load and validate application configuration.
+    """Load application configuration from environment variables."""
 
-    Args:
-        environ: Optional environment-variable mapping. Supplying a mapping
-            makes configuration behavior easy to test without modifying the
-            real process environment.
-    """
-
-    environment = os.environ if environ is None else environ
-
-    verifier_mode = normalize_verifier_mode(
-        environment.get(VERIFIER_MODE_ENV)
+    environment = (
+        os.environ
+        if environ is None
+        else environ
     )
 
     return AppConfig(
-        verifier_mode=verifier_mode,
+        verifier_mode=normalize_verifier_mode(
+            environment.get(
+                VERIFIER_MODE_ENV
+            )
+        ),
+        openai_api_key=normalize_openai_api_key(
+            environment.get(
+                OPENAI_API_KEY_ENV
+            )
+        ),
+        openai_model=normalize_openai_model(
+            environment.get(
+                OPENAI_MODEL_ENV
+            )
+        ),
+        openai_timeout_seconds=(
+            normalize_positive_float(
+                environment.get(
+                    OPENAI_TIMEOUT_SECONDS_ENV
+                ),
+                default=(
+                    DEFAULT_OPENAI_TIMEOUT_SECONDS
+                ),
+                field_name=(
+                    OPENAI_TIMEOUT_SECONDS_ENV
+                ),
+            )
+        ),
+        openai_max_retries=(
+            normalize_nonnegative_integer(
+                environment.get(
+                    OPENAI_MAX_RETRIES_ENV
+                ),
+                default=(
+                    DEFAULT_OPENAI_MAX_RETRIES
+                ),
+                field_name=(
+                    OPENAI_MAX_RETRIES_ENV
+                ),
+            )
+        ),
     )
