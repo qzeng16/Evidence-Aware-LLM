@@ -854,3 +854,43 @@ evaluation/results/latest.md
 The benchmark is designed for project regression testing and architecture
 comparison. Its results should not be presented as general-purpose
 fact-checking accuracy.
+
+<!-- performance-baseline:start -->
+
+## Local API performance baseline
+
+The repository includes a repeatable local Docker load test for the `rule_only` API.
+
+This is a development regression baseline, not a production capacity or service-level claim.
+
+| Endpoint | Concurrency | Success | Throughput (req/s) | Average (ms) | P95 (ms) | P99 (ms) |
+|---|---:|---:|---:|---:|---:|---:|
+| /live | 1 | 100.0% | 302.940 | 3.190 | 3.897 | 3.921 |
+| /live | 4 | 100.0% | 405.252 | 9.361 | 12.945 | 13.149 |
+| /live | 8 | 100.0% | 405.845 | 17.890 | 25.456 | 25.472 |
+| /ready | 1 | 100.0% | 301.385 | 3.193 | 5.317 | 6.173 |
+| /ready | 4 | 100.0% | 247.802 | 15.527 | 50.161 | 55.685 |
+| /ready | 8 | 100.0% | 468.520 | 15.129 | 20.240 | 21.462 |
+| /verify | 1 | 100.0% | 5.002 | 199.716 | 303.932 | 397.100 |
+| /verify | 4 | 100.0% | 11.472 | 340.895 | 507.791 | 531.978 |
+| /verify | 8 | 100.0% | 8.115 | 948.015 | 1187.869 | 1217.475 |
+
+The highest measured `/verify` throughput in this run was **11.472 requests/second** at concurrency **4**.
+
+Test configuration:
+
+- Source commit: `328ffb747215a83e4f1228c6fc6b55e444e437aa`
+- Container resources: `2 CPU / 4g memory`
+- Requests per scenario: `30`
+- Warmup requests per scenario: `3`
+- Concurrency levels: `1, 4, 8`
+
+Run the benchmark locally with:
+
+```bash
+./scripts/run_performance_baseline.sh
+```
+
+The complete machine-readable report is stored at `performance/baselines/local_rule_only.json`.
+
+<!-- performance-baseline:end -->

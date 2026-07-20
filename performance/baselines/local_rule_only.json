@@ -1,0 +1,409 @@
+{
+  "schema_version": 1,
+  "benchmark_type": "local_docker_rule_only_baseline",
+  "generated_at": "2026-07-20T23:27:28.902258+00:00",
+  "scope": {
+    "purpose": "Development regression baseline; not a production capacity claim.",
+    "base_url": "http://127.0.0.1:<local-port>",
+    "verifier_mode": "rule_only",
+    "endpoints": [
+      "/live",
+      "/ready",
+      "/verify"
+    ]
+  },
+  "source": {
+    "git_commit": "328ffb747215a83e4f1228c6fc6b55e444e437aa",
+    "working_tree_dirty": false,
+    "docker_image": "evidence-aware-llm:performance-baseline",
+    "docker_image_id": "sha256:f390ac37b4fe589d7c14a7f362095a76f2e4cc1cd5732b8a791b5254f1098dea"
+  },
+  "environment": {
+    "host_platform": "macOS-15.7.7-x86_64-i386-64bit",
+    "host_machine": "x86_64",
+    "host_python": "3.9.4",
+    "container_python": "Python 3.11.15",
+    "docker_server_version": "29.6.1",
+    "container_cpu_limit": "2",
+    "container_memory_limit": "4g"
+  },
+  "configuration": {
+    "requests_per_scenario": 30,
+    "warmup_requests": 3,
+    "request_timeout_seconds": 60.0,
+    "concurrencies": [
+      1,
+      4,
+      8
+    ]
+  },
+  "probe_snapshot": {
+    "live": {
+      "status": "alive",
+      "timestamp": "2026-07-20T23:27:13.244487+00:00",
+      "request_id": "a695432beb6e450789f712d523b44a8b",
+      "data": {
+        "alive": true
+      },
+      "metadata": null,
+      "error": null
+    },
+    "ready": {
+      "status": "ready",
+      "timestamp": "2026-07-20T23:27:13.264596+00:00",
+      "request_id": "71b2a6e219884322b255e3d67f94b49f",
+      "data": {
+        "ready": true
+      },
+      "metadata": {
+        "status": "ready",
+        "verifier_mode": "rule_only",
+        "active_verifier_mode": "rule",
+        "llm_verifier_available": false,
+        "llm_provider": null,
+        "llm_model": null,
+        "openai_api_key_configured": false,
+        "ready": true
+      },
+      "error": null
+    },
+    "health": {
+      "status": "ready",
+      "verifier_mode": "rule_only",
+      "active_verifier_mode": "rule",
+      "llm_verifier_available": false,
+      "llm_provider": null,
+      "llm_model": null,
+      "openai_api_key_configured": false,
+      "ready": true
+    }
+  },
+  "scenarios": [
+    {
+      "endpoint": "/live",
+      "concurrency": 1,
+      "configuration": {
+        "endpoint": "/live",
+        "requests": 30,
+        "concurrency": 1,
+        "warmup_requests": 3,
+        "timeout_seconds": 60.0,
+        "minimum_success_rate": 1.0
+      },
+      "results": {
+        "endpoint": "/live",
+        "concurrency": 1,
+        "elapsed_seconds": 0.099,
+        "completed_requests": 30,
+        "successful_requests": 30,
+        "failed_requests": 0,
+        "success_rate": 1.0,
+        "error_rate": 0.0,
+        "throughput_rps": 302.94,
+        "latency_ms": {
+          "minimum": 2.712,
+          "average": 3.19,
+          "p50": 3.153,
+          "p95": 3.897,
+          "p99": 3.921,
+          "maximum": 3.921
+        },
+        "status_code_counts": {
+          "200": 30
+        },
+        "error_type_counts": {}
+      }
+    },
+    {
+      "endpoint": "/live",
+      "concurrency": 4,
+      "configuration": {
+        "endpoint": "/live",
+        "requests": 30,
+        "concurrency": 4,
+        "warmup_requests": 3,
+        "timeout_seconds": 60.0,
+        "minimum_success_rate": 1.0
+      },
+      "results": {
+        "endpoint": "/live",
+        "concurrency": 4,
+        "elapsed_seconds": 0.074,
+        "completed_requests": 30,
+        "successful_requests": 30,
+        "failed_requests": 0,
+        "success_rate": 1.0,
+        "error_rate": 0.0,
+        "throughput_rps": 405.252,
+        "latency_ms": {
+          "minimum": 4.756,
+          "average": 9.361,
+          "p50": 9.183,
+          "p95": 12.945,
+          "p99": 13.149,
+          "maximum": 13.149
+        },
+        "status_code_counts": {
+          "200": 30
+        },
+        "error_type_counts": {}
+      }
+    },
+    {
+      "endpoint": "/live",
+      "concurrency": 8,
+      "configuration": {
+        "endpoint": "/live",
+        "requests": 30,
+        "concurrency": 8,
+        "warmup_requests": 3,
+        "timeout_seconds": 60.0,
+        "minimum_success_rate": 1.0
+      },
+      "results": {
+        "endpoint": "/live",
+        "concurrency": 8,
+        "elapsed_seconds": 0.074,
+        "completed_requests": 30,
+        "successful_requests": 30,
+        "failed_requests": 0,
+        "success_rate": 1.0,
+        "error_rate": 0.0,
+        "throughput_rps": 405.845,
+        "latency_ms": {
+          "minimum": 8.761,
+          "average": 17.89,
+          "p50": 18.491,
+          "p95": 25.456,
+          "p99": 25.472,
+          "maximum": 25.472
+        },
+        "status_code_counts": {
+          "200": 30
+        },
+        "error_type_counts": {}
+      }
+    },
+    {
+      "endpoint": "/ready",
+      "concurrency": 1,
+      "configuration": {
+        "endpoint": "/ready",
+        "requests": 30,
+        "concurrency": 1,
+        "warmup_requests": 3,
+        "timeout_seconds": 60.0,
+        "minimum_success_rate": 1.0
+      },
+      "results": {
+        "endpoint": "/ready",
+        "concurrency": 1,
+        "elapsed_seconds": 0.1,
+        "completed_requests": 30,
+        "successful_requests": 30,
+        "failed_requests": 0,
+        "success_rate": 1.0,
+        "error_rate": 0.0,
+        "throughput_rps": 301.385,
+        "latency_ms": {
+          "minimum": 2.66,
+          "average": 3.193,
+          "p50": 3.006,
+          "p95": 5.317,
+          "p99": 6.173,
+          "maximum": 6.173
+        },
+        "status_code_counts": {
+          "200": 30
+        },
+        "error_type_counts": {}
+      }
+    },
+    {
+      "endpoint": "/ready",
+      "concurrency": 4,
+      "configuration": {
+        "endpoint": "/ready",
+        "requests": 30,
+        "concurrency": 4,
+        "warmup_requests": 3,
+        "timeout_seconds": 60.0,
+        "minimum_success_rate": 1.0
+      },
+      "results": {
+        "endpoint": "/ready",
+        "concurrency": 4,
+        "elapsed_seconds": 0.121,
+        "completed_requests": 30,
+        "successful_requests": 30,
+        "failed_requests": 0,
+        "success_rate": 1.0,
+        "error_rate": 0.0,
+        "throughput_rps": 247.802,
+        "latency_ms": {
+          "minimum": 5.375,
+          "average": 15.527,
+          "p50": 9.665,
+          "p95": 50.161,
+          "p99": 55.685,
+          "maximum": 55.685
+        },
+        "status_code_counts": {
+          "200": 30
+        },
+        "error_type_counts": {}
+      }
+    },
+    {
+      "endpoint": "/ready",
+      "concurrency": 8,
+      "configuration": {
+        "endpoint": "/ready",
+        "requests": 30,
+        "concurrency": 8,
+        "warmup_requests": 3,
+        "timeout_seconds": 60.0,
+        "minimum_success_rate": 1.0
+      },
+      "results": {
+        "endpoint": "/ready",
+        "concurrency": 8,
+        "elapsed_seconds": 0.064,
+        "completed_requests": 30,
+        "successful_requests": 30,
+        "failed_requests": 0,
+        "success_rate": 1.0,
+        "error_rate": 0.0,
+        "throughput_rps": 468.52,
+        "latency_ms": {
+          "minimum": 8.3,
+          "average": 15.129,
+          "p50": 15.437,
+          "p95": 20.24,
+          "p99": 21.462,
+          "maximum": 21.462
+        },
+        "status_code_counts": {
+          "200": 30
+        },
+        "error_type_counts": {}
+      }
+    },
+    {
+      "endpoint": "/verify",
+      "concurrency": 1,
+      "configuration": {
+        "endpoint": "/verify",
+        "requests": 30,
+        "concurrency": 1,
+        "warmup_requests": 3,
+        "timeout_seconds": 60.0,
+        "minimum_success_rate": 1.0
+      },
+      "results": {
+        "endpoint": "/verify",
+        "concurrency": 1,
+        "elapsed_seconds": 5.998,
+        "completed_requests": 30,
+        "successful_requests": 30,
+        "failed_requests": 0,
+        "success_rate": 1.0,
+        "error_rate": 0.0,
+        "throughput_rps": 5.002,
+        "latency_ms": {
+          "minimum": 102.822,
+          "average": 199.716,
+          "p50": 198.335,
+          "p95": 303.932,
+          "p99": 397.1,
+          "maximum": 397.1
+        },
+        "status_code_counts": {
+          "200": 30
+        },
+        "error_type_counts": {}
+      }
+    },
+    {
+      "endpoint": "/verify",
+      "concurrency": 4,
+      "configuration": {
+        "endpoint": "/verify",
+        "requests": 30,
+        "concurrency": 4,
+        "warmup_requests": 3,
+        "timeout_seconds": 60.0,
+        "minimum_success_rate": 1.0
+      },
+      "results": {
+        "endpoint": "/verify",
+        "concurrency": 4,
+        "elapsed_seconds": 2.615,
+        "completed_requests": 30,
+        "successful_requests": 30,
+        "failed_requests": 0,
+        "success_rate": 1.0,
+        "error_rate": 0.0,
+        "throughput_rps": 11.472,
+        "latency_ms": {
+          "minimum": 212.353,
+          "average": 340.895,
+          "p50": 315.928,
+          "p95": 507.791,
+          "p99": 531.978,
+          "maximum": 531.978
+        },
+        "status_code_counts": {
+          "200": 30
+        },
+        "error_type_counts": {}
+      }
+    },
+    {
+      "endpoint": "/verify",
+      "concurrency": 8,
+      "configuration": {
+        "endpoint": "/verify",
+        "requests": 30,
+        "concurrency": 8,
+        "warmup_requests": 3,
+        "timeout_seconds": 60.0,
+        "minimum_success_rate": 1.0
+      },
+      "results": {
+        "endpoint": "/verify",
+        "concurrency": 8,
+        "elapsed_seconds": 3.697,
+        "completed_requests": 30,
+        "successful_requests": 30,
+        "failed_requests": 0,
+        "success_rate": 1.0,
+        "error_rate": 0.0,
+        "throughput_rps": 8.115,
+        "latency_ms": {
+          "minimum": 377.457,
+          "average": 948.015,
+          "p50": 1000.99,
+          "p95": 1187.869,
+          "p99": 1217.475,
+          "maximum": 1217.475
+        },
+        "status_code_counts": {
+          "200": 30
+        },
+        "error_type_counts": {}
+      }
+    }
+  ],
+  "prometheus_snapshot": [
+    "evidence_http_requests_total{method=\"GET\",path=\"/live\",status_code=\"200\"} 103.0",
+    "evidence_http_requests_total{method=\"GET\",path=\"/ready\",status_code=\"200\"} 101.0",
+    "evidence_http_requests_total{method=\"GET\",path=\"/health\",status_code=\"200\"} 1.0",
+    "evidence_http_requests_total{method=\"POST\",path=\"/verify\",status_code=\"200\"} 99.0",
+    "evidence_http_request_duration_seconds_count{method=\"GET\",path=\"/live\"} 103.0",
+    "evidence_http_request_duration_seconds_count{method=\"GET\",path=\"/ready\"} 101.0",
+    "evidence_http_request_duration_seconds_count{method=\"GET\",path=\"/health\"} 1.0",
+    "evidence_http_request_duration_seconds_count{method=\"POST\",path=\"/verify\"} 99.0",
+    "evidence_verification_requests_total{outcome=\"success\"} 99.0"
+  ]
+}
