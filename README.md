@@ -16,6 +16,7 @@ service on Hugging Face Spaces.
 - **Health endpoint:** https://qzeng16-evidence-aware-llm-api.hf.space/health
 - **Verification endpoint:** `POST /verify`
 - **Deployment mode:** `VERIFIER_MODE=rule_only`
+- **CI/CD:** GitHub Actions runs the complete test suite and Docker build before automatically synchronizing `main` to Hugging Face Spaces.
 
 The public deployment does not require or expose an OpenAI API key.
 
