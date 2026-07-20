@@ -66,6 +66,14 @@ VERIFICATION_REQUESTS_TOTAL = Counter(
     registry=METRICS_REGISTRY,
 )
 
+VERIFICATION_ERRORS_TOTAL = Counter(
+    "evidence_verification_errors_total",
+    "Total verification failures by stable error type.",
+    ("error_type",),
+    registry=METRICS_REGISTRY,
+)
+
+
 VERIFICATION_RESULTS_TOTAL = Counter(
     "evidence_verification_results_total",
     "Total verification results by label and verifier.",
@@ -180,6 +188,29 @@ def record_verification_response(
     ).inc()
 
     if outcome != "success":
+        error = response.get("error")
+
+        error_type = (
+            error.get("type")
+            if isinstance(error, dict)
+            else None
+        )
+
+        allowed_error_types = {
+            "invalid_claim",
+            "invalid_request",
+            "service_unavailable",
+            "provider_error",
+            "internal_error",
+        }
+
+        if error_type not in allowed_error_types:
+            error_type = "unknown"
+
+        VERIFICATION_ERRORS_TOTAL.labels(
+            error_type=error_type
+        ).inc()
+
         return
 
     data = response.get("data")

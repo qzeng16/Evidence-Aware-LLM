@@ -4,6 +4,13 @@ from typing import Any, Dict, Optional
 
 from sentence_transformers import SentenceTransformer
 
+from app.error_contract import (
+    INTERNAL_ERROR,
+    INVALID_CLAIM_ERROR,
+    PROVIDER_ERROR,
+    SERVICE_UNAVAILABLE_ERROR,
+    annotate_error_response,
+)
 from app.config import (
     DEFAULT_VERIFIER_MODE,
     HYBRID_MODE,
@@ -12,6 +19,7 @@ from app.config import (
     AppConfig,
     load_app_config,
 )
+from app.llm_clients.base import LLMClientError
 from app.llm_clients import (
     OPENAI_PROVIDER,
     OpenAIResponsesClient,
@@ -412,19 +420,20 @@ def verify_claim_service(
     """Validate and verify a claim through the active backend."""
 
     if not is_service_ready():
-        error_message = (
-            system_state.get(
-                "initialization_error"
-            )
-            or "Service is not ready."
+        response = verifier.build_error_response(
+            "Service is not ready."
         )
 
-        response = verifier.build_error_response(
-            error_message
+        response = annotate_error_response(
+            response,
+            error_type=SERVICE_UNAVAILABLE_ERROR,
+            retryable=True,
         )
+
         response = attach_execution_metadata(
             response
         )
+
         verifier.save_log(response)
 
         return response
@@ -437,9 +446,17 @@ def verify_claim_service(
         response = verifier.build_error_response(
             error_message
         )
+
+        response = annotate_error_response(
+            response,
+            error_type=INVALID_CLAIM_ERROR,
+            retryable=False,
+        )
+
         response = attach_execution_metadata(
             response
         )
+
         verifier.save_log(response)
 
         return response
@@ -468,14 +485,33 @@ def verify_claim_service(
             verification_run.result.to_dict()
         )
 
-    except Exception as error:
+    except LLMClientError as error:
         response = verifier.build_error_response(
             str(error)
+        )
+
+        response = annotate_error_response(
+            response,
+            error_type=PROVIDER_ERROR,
+            retryable=error.retryable,
+            code=error.error_code,
+        )
+
+    except Exception:
+        response = verifier.build_error_response(
+            "An unexpected internal error occurred."
+        )
+
+        response = annotate_error_response(
+            response,
+            error_type=INTERNAL_ERROR,
+            retryable=True,
         )
 
     response = attach_execution_metadata(
         response
     )
+
     verifier.save_log(response)
 
     return response

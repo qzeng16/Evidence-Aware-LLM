@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 
+from app.exception_handlers import (
+    register_exception_handlers,
+)
 from app.observability import (
     RequestLoggingMiddleware,
 )
@@ -22,6 +25,8 @@ app = FastAPI(
 app.add_middleware(
     RequestLoggingMiddleware
 )
+
+register_exception_handlers(app)
 
 
 @app.on_event("startup")
