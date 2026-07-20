@@ -559,3 +559,46 @@ def test_invalid_policy_configuration_is_rejected(
                 field_name: value,
             },
         )
+
+def test_default_threshold_short_circuits_decisive_rule():
+    """A 0.86 decisive rule result should avoid an LLM call."""
+
+    rule = StubVerifier(
+        verifier_type=VerifierType.RULE,
+        run=build_run(
+            VerificationLabel.SUPPORTED,
+            0.86,
+            VerifierType.RULE,
+            "rule-086",
+            "The rule verifier found direct support.",
+            matched_rule="support_rule",
+        ),
+    )
+
+    llm = StubVerifier(
+        verifier_type=VerifierType.LLM,
+        error=AssertionError(
+            "LLM should not be called."
+        ),
+    )
+
+    verifier = HybridVerifier(
+        rule_verifier=rule,
+        llm_verifier=llm,
+    )
+
+    run = verifier.verify(
+        "A directly supported claim."
+    )
+
+    assert (
+        run.result.label
+        == VerificationLabel.SUPPORTED
+    )
+    assert run.result.confidence == 0.86
+    assert (
+        run.result.verifier_type
+        == VerifierType.HYBRID
+    )
+    assert llm.call_count == 0
+

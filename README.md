@@ -718,7 +718,7 @@ VERIFIER_MODE=hybrid
 The hybrid verifier uses a cost-aware and fault-tolerant decision policy:
 
 1. It first runs the deterministic rule verifier.
-2. A decisive rule result with confidence at or above `0.95` is returned
+2. A decisive rule result with confidence at or above `0.85` is returned
    immediately without calling the LLM.
 3. Lower-confidence or uncertain rule results are sent to the LLM judge.
 4. Agreement between decisive rule and LLM results increases confidence.
@@ -762,3 +762,45 @@ hybrid
 
 This project is a portfolio-grade evidence verification demo. It should not
 be presented as a general-purpose or production fact-checking authority.
+
+<!-- verifier-evaluation-benchmark -->
+
+## Verifier Evaluation
+
+The repository includes a small, manually curated regression benchmark for
+comparing the three verifier modes:
+
+```text
+rule_only
+llm_only
+hybrid
+```
+
+Run the complete comparison with:
+
+```bash
+export OPENAI_API_KEY="your-project-key"
+python3 scripts/evaluate_verifiers.py
+unset OPENAI_API_KEY
+```
+
+The evaluator reports:
+
+- exact-label accuracy;
+- decisive coverage;
+- abstention rate;
+- average and P95 latency;
+- LLM call count and call rate;
+- input, output, and total token usage;
+- per-case predictions and evidence references.
+
+Reports are written to:
+
+```text
+evaluation/results/latest.json
+evaluation/results/latest.md
+```
+
+The benchmark is designed for project regression testing and architecture
+comparison. Its results should not be presented as general-purpose
+fact-checking accuracy.

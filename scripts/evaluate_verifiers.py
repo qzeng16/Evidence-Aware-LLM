@@ -72,12 +72,13 @@ class RecordingLLMClient:
     ) -> LLMClientResponse:
         """Generate a response and record usage."""
 
+        self.call_count += 1
+
         response = self._inner_client.generate(
             messages=messages,
             response_schema=response_schema,
         )
 
-        self.call_count += 1
         self.input_tokens += (
             response.input_tokens or 0
         )

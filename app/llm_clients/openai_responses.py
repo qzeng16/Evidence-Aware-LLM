@@ -27,7 +27,8 @@ from app.llm_clients.base import (
 OPENAI_PROVIDER = "openai"
 OPENAI_RESPONSE_FORMAT_NAME = "llm_judge_output"
 OPENAI_STORE_RESPONSES = False
-OPENAI_MAX_OUTPUT_TOKENS = 800
+OPENAI_MAX_OUTPUT_TOKENS = 1600
+OPENAI_REASONING_EFFORT = "low"
 
 
 def _normalize_required_text(
@@ -286,6 +287,11 @@ class OpenAIResponsesClient:
                     max_output_tokens=(
                         OPENAI_MAX_OUTPUT_TOKENS
                     ),
+                    reasoning={
+                        "effort": (
+                            OPENAI_REASONING_EFFORT
+                        ),
+                    },
                 )
             )
 
@@ -362,14 +368,34 @@ class OpenAIResponsesClient:
             None,
         )
 
+        incomplete_details = getattr(
+            response,
+            "incomplete_details",
+            None,
+        )
+
+        incomplete_reason = getattr(
+            incomplete_details,
+            "reason",
+            None,
+        )
+
         if status not in {
             None,
             "completed",
         }:
+            reason_suffix = (
+                " Incomplete reason: "
+                f"{incomplete_reason}."
+                if incomplete_reason
+                else ""
+            )
+
             raise LLMClientError(
                 (
                     "OpenAI response did not complete "
                     f"successfully. Status: {status}."
+                    f"{reason_suffix}"
                 ),
                 error_code=INVALID_RESPONSE_ERROR,
                 retryable=False,

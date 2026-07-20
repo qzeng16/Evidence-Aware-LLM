@@ -204,7 +204,7 @@ class HybridVerifier:
         self,
         rule_verifier: Verifier,
         llm_verifier: Verifier,
-        rule_short_circuit_confidence: float = 0.95,
+        rule_short_circuit_confidence: float = 0.85,
         agreement_bonus: float = 0.05,
         single_verifier_discount: float = 0.90,
         llm_failure_discount: float = 0.85,

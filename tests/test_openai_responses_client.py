@@ -165,7 +165,10 @@ def test_generate_uses_responses_structured_outputs():
 
     assert request["model"] == "test-model"
     assert request["store"] is False
-    assert request["max_output_tokens"] == 800
+    assert request["max_output_tokens"] == 1600
+    assert request["reasoning"] == {
+        "effort": "low",
+    }
     assert request["input"][0][
         "role"
     ] == "system"
@@ -481,3 +484,40 @@ def test_invalid_client_configuration_is_rejected(
     assert error_info.value.error_code == (
         INVALID_REQUEST_ERROR
     )
+
+def test_incomplete_reason_is_exposed():
+    """Incomplete provider responses should expose a safe reason."""
+
+    class IncompleteDetails:
+        reason = "max_output_tokens"
+
+    response = FakeOpenAIResponse(
+        status="incomplete",
+    )
+
+    response.incomplete_details = (
+        IncompleteDetails()
+    )
+
+    client = build_client(
+        FakeSDKClient(
+            response=response
+        )
+    )
+
+    with pytest.raises(
+        LLMClientError,
+    ) as error_info:
+        client.generate(
+            build_messages(),
+            LLM_JUDGE_JSON_SCHEMA,
+        )
+
+    assert error_info.value.error_code == (
+        INVALID_RESPONSE_ERROR
+    )
+
+    assert "max_output_tokens" in str(
+        error_info.value
+    )
+
