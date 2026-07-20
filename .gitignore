@@ -17,8 +17,9 @@ env/
 logs/*.jsonl
 
 # Cached embeddings
-data/evidence_embeddings.npy
-data/evidence_embeddings_meta.json
 
 # Local backup files
 README_old.md
+
+# Generated embedding cache
+data/cache/

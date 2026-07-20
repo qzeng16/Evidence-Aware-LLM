@@ -11,11 +11,14 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-DATA_PATH = Path(__file__).parent / "data" / "evidence.csv"
-RULES_PATH = Path(__file__).parent / "data" / "rules.json"
+DATA_DIR = Path(__file__).parent / "data"
 
-EMBEDDINGS_PATH = Path(__file__).parent / "data" / "evidence_embeddings.npy"
-EMBEDDINGS_META_PATH = Path(__file__).parent / "data" / "evidence_embeddings_meta.json"
+DATA_PATH = DATA_DIR / "evidence.csv"
+RULES_PATH = DATA_DIR / "rules.json"
+
+CACHE_DIR = DATA_DIR / "cache"
+EMBEDDINGS_PATH = CACHE_DIR / "evidence_embeddings.npy"
+EMBEDDINGS_META_PATH = CACHE_DIR / "evidence_embeddings_meta.json"
 
 LOG_DIR = Path(__file__).parent / "logs"
 LOG_PATH = LOG_DIR / "verification_logs.jsonl"
@@ -153,6 +156,8 @@ def get_or_build_evidence_embeddings(
 
     print("Building evidence embeddings...")
     embeddings = build_evidence_embeddings(evidence_list, model)
+
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
     np.save(EMBEDDINGS_PATH, embeddings)
 
