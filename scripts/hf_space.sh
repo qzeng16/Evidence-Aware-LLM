@@ -118,6 +118,90 @@ print("Public demo page returned HTTP 200")
 
 print()
 print("========================================")
+print("Checking public /live")
+print("========================================")
+
+live = load_json("/live")
+
+if live.get("status") != "alive":
+    raise SystemExit(
+        "/live response status is not alive."
+    )
+
+if live.get("data", {}).get("alive") is not True:
+    raise SystemExit(
+        "/live response does not report alive=true."
+    )
+
+reject_secrets(live)
+
+print(
+    json.dumps(
+        live,
+        indent=2,
+        ensure_ascii=False,
+    )
+)
+
+print()
+print("========================================")
+print("Checking public /ready")
+print("========================================")
+
+ready = load_json("/ready")
+
+if ready.get("status") != "ready":
+    raise SystemExit(
+        "/ready response status is not ready."
+    )
+
+if ready.get("data", {}).get("ready") is not True:
+    raise SystemExit(
+        "/ready response does not report ready=true."
+    )
+
+ready_metadata = ready.get("metadata")
+
+if not isinstance(ready_metadata, dict):
+    raise SystemExit(
+        "/ready metadata is missing."
+    )
+
+expected_ready = {
+    "status": "ready",
+    "ready": True,
+    "verifier_mode": "rule_only",
+    "active_verifier_mode": "rule",
+    "llm_verifier_available": False,
+}
+
+for key, expected in expected_ready.items():
+    actual = ready_metadata.get(key)
+
+    if actual != expected:
+        raise SystemExit(
+            f"/ready metadata field {key!r}: "
+            f"expected {expected!r}, got "
+            f"{actual!r}"
+        )
+
+if "initialization_error" in ready_metadata:
+    raise SystemExit(
+        "/ready exposed initialization_error."
+    )
+
+reject_secrets(ready)
+
+print(
+    json.dumps(
+        ready,
+        indent=2,
+        ensure_ascii=False,
+    )
+)
+
+print()
+print("========================================")
 print("Checking public /health")
 print("========================================")
 
@@ -138,6 +222,11 @@ for key, expected in expected_health.items():
             f"/health field {key!r}: expected "
             f"{expected!r}, got {actual!r}"
         )
+
+if "initialization_error" in health:
+    raise SystemExit(
+        "/health exposed initialization_error."
+    )
 
 reject_secrets(health)
 
@@ -257,6 +346,8 @@ print("========================================")
 print("Public deployment check passed")
 print("========================================")
 print()
+print(f"Live:   {base_url}/live")
+print(f"Ready:  {base_url}/ready")
 print(f"Health: {base_url}/health")
 print(f"Docs:   {base_url}/docs")
 print(f"Verify: POST {base_url}/verify")

@@ -15,6 +15,8 @@ HOST_PORT="${HOST_PORT:-8001}"
 BASE_URL="http://127.0.0.1:${HOST_PORT}"
 
 TEMP_DIR="$(mktemp -d)"
+LIVE_FILE="${TEMP_DIR}/live.json"
+READY_FILE="${TEMP_DIR}/ready.json"
 HEALTH_FILE="${TEMP_DIR}/health.json"
 VERIFY_FILE="${TEMP_DIR}/verify.json"
 
@@ -80,10 +82,10 @@ for attempt in $(seq 1 120); do
   HTTP_STATUS="$(
     curl \
       --silent \
-      --output "$HEALTH_FILE" \
+      --output "$READY_FILE" \
       --write-out "%{http_code}" \
       --max-time 5 \
-      "${BASE_URL}/health" \
+      "${BASE_URL}/ready" \
       2>/dev/null \
       || true
   )"
@@ -112,8 +114,96 @@ fi
 
 echo
 echo "========================================"
-echo "4. Validating /health"
+echo "4. Validating /live, /ready and /health"
 echo "========================================"
+
+curl \
+  --fail \
+  --silent \
+  --show-error \
+  --max-time 30 \
+  "${BASE_URL}/live" \
+  > "$LIVE_FILE"
+
+curl \
+  --fail \
+  --silent \
+  --show-error \
+  --max-time 30 \
+  "${BASE_URL}/health" \
+  > "$HEALTH_FILE"
+
+python3 - "$LIVE_FILE" "$READY_FILE" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+
+live = json.loads(
+    Path(sys.argv[1]).read_text(
+        encoding="utf-8"
+    )
+)
+
+ready = json.loads(
+    Path(sys.argv[2]).read_text(
+        encoding="utf-8"
+    )
+)
+
+if live.get("status") != "alive":
+    raise SystemExit(
+        "/live did not report status=alive."
+    )
+
+if live.get("data", {}).get("alive") is not True:
+    raise SystemExit(
+        "/live did not report data.alive=true."
+    )
+
+if ready.get("status") != "ready":
+    raise SystemExit(
+        "/ready did not report status=ready."
+    )
+
+if ready.get("data", {}).get("ready") is not True:
+    raise SystemExit(
+        "/ready did not report data.ready=true."
+    )
+
+metadata = ready.get("metadata")
+
+if not isinstance(metadata, dict):
+    raise SystemExit(
+        "/ready metadata is missing."
+    )
+
+expected = {
+    "status": "ready",
+    "ready": True,
+    "verifier_mode": "rule_only",
+    "active_verifier_mode": "rule",
+    "llm_verifier_available": False,
+}
+
+for field_name, expected_value in expected.items():
+    actual_value = metadata.get(field_name)
+
+    if actual_value != expected_value:
+        raise SystemExit(
+            "/ready metadata {}: expected {!r}, "
+            "got {!r}.".format(
+                field_name,
+                expected_value,
+                actual_value,
+            )
+        )
+
+if "initialization_error" in metadata:
+    raise SystemExit(
+        "/ready exposed initialization_error."
+    )
+PY
 
 python3 - "$HEALTH_FILE" <<'PY'
 import json
@@ -135,6 +225,11 @@ expected = {
 }
 
 errors = []
+
+if "initialization_error" in status:
+    errors.append(
+        "/health exposed initialization_error."
+    )
 
 for field_name, expected_value in expected.items():
     actual_value = status.get(field_name)

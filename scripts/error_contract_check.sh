@@ -44,9 +44,11 @@ show_logs() {
   echo "=================================="
 }
 
-wait_for_health() {
+wait_for_http_status() {
   local base_url="$1"
-  local container_name="$2"
+  local path="$2"
+  local expected_status="$3"
+  local container_name="$4"
 
   for attempt in $(seq 1 120); do
     local status
@@ -57,19 +59,19 @@ wait_for_health() {
         --output /dev/null \
         --write-out "%{http_code}" \
         --max-time 5 \
-        "${base_url}/health" \
+        "${base_url}${path}" \
         2>/dev/null \
         || true
     )"
 
-    if [[ "$status" == "200" ]]; then
+    if [[ "$status" == "$expected_status" ]]; then
       return 0
     fi
 
     if ! docker ps \
       --format '{{.Names}}' \
       | grep -qx "$container_name"; then
-      echo "Container stopped before becoming ready."
+      echo "Container stopped before ${path} became available."
       show_logs "$container_name"
       return 1
     fi
@@ -77,7 +79,40 @@ wait_for_health() {
     sleep 2
   done
 
-  echo "API did not become ready: ${base_url}"
+  echo "${base_url}${path} did not return HTTP ${expected_status}."
+  show_logs "$container_name"
+
+  return 1
+}
+
+wait_for_docker_health() {
+  local container_name="$1"
+
+  for attempt in $(seq 1 120); do
+    local health_status
+
+    health_status="$(
+      docker inspect \
+        --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}missing{{end}}' \
+        "$container_name" \
+        2>/dev/null \
+        || true
+    )"
+
+    if [[ "$health_status" == "healthy" ]]; then
+      return 0
+    fi
+
+    if [[ "$health_status" == "unhealthy" ]]; then
+      echo "Docker marked ${container_name} unhealthy."
+      show_logs "$container_name"
+      return 1
+    fi
+
+    sleep 2
+  done
+
+  echo "Docker health timed out: ${container_name}"
   show_logs "$container_name"
 
   return 1
@@ -127,8 +162,19 @@ docker run \
   "$IMAGE_NAME" \
   >/dev/null
 
-wait_for_health \
+wait_for_http_status \
   "$RULE_URL" \
+  "/live" \
+  "200" \
+  "$RULE_CONTAINER"
+
+wait_for_http_status \
+  "$RULE_URL" \
+  "/ready" \
+  "200" \
+  "$RULE_CONTAINER"
+
+wait_for_docker_health \
   "$RULE_CONTAINER"
 
 echo
@@ -211,9 +257,19 @@ docker run \
   "$IMAGE_NAME" \
   >/dev/null
 
-wait_for_health \
+wait_for_http_status \
   "$UNREADY_URL" \
+  "/live" \
+  "200" \
   "$UNREADY_CONTAINER"
+
+wait_for_docker_health \
+  "$UNREADY_CONTAINER"
+
+request \
+  "readiness_unavailable" \
+  --request GET \
+  "${UNREADY_URL}/ready"
 
 request \
   "service_unavailable" \
@@ -557,6 +613,13 @@ validate_error(
 )
 
 validate_error(
+    "readiness_unavailable",
+    expected_status=503,
+    expected_type="service_unavailable",
+    expected_retryable=True,
+)
+
+validate_error(
     "service_unavailable",
     expected_status=503,
     expected_type="service_unavailable",
@@ -719,7 +782,9 @@ summary = {
     "invalid_request": 422,
     "not_found": 404,
     "method_not_allowed": 405,
+    "readiness_unavailable": 503,
     "service_unavailable": 503,
+    "docker_health_uses_liveness": True,
     "request_ids_consistent": True,
     "error_metrics_recorded": True,
     "submitted_private_value_exposed": False,

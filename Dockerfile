@@ -34,4 +34,7 @@ USER appuser
 
 EXPOSE 8000
 
+HEALTHCHECK --interval=5s --timeout=3s --start-period=120s --retries=3 \
+    CMD python -c 'import os, urllib.request; urllib.request.urlopen("http://127.0.0.1:" + os.environ.get("PORT", "8000") + "/live", timeout=3).read()'
+
 CMD ["sh", "-c", "exec python -m uvicorn app.main:app --host 0.0.0.0 --port \"${PORT}\""]

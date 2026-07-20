@@ -6,12 +6,14 @@ BASE_URL="${BASE_URL:-http://127.0.0.1:8000}"
 
 CLAIM="${1:-Retrieval augmented generation can improve factual reliability.}"
 
+READY_FILE="$(mktemp)"
 HEALTH_FILE="$(mktemp)"
 PAYLOAD_FILE="$(mktemp)"
 RESPONSE_FILE="$(mktemp)"
 
 cleanup() {
   rm -f \
+    "$READY_FILE" \
     "$HEALTH_FILE" \
     "$PAYLOAD_FILE" \
     "$RESPONSE_FILE"
@@ -19,6 +21,63 @@ cleanup() {
 
 trap cleanup EXIT
 
+echo "Checking ${BASE_URL}/ready ..."
+
+curl \
+  --fail \
+  --silent \
+  --show-error \
+  --max-time 60 \
+  "${BASE_URL}/ready" \
+  > "$READY_FILE"
+
+python3 - "$READY_FILE" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+
+response = json.loads(
+    Path(sys.argv[1]).read_text(
+        encoding="utf-8"
+    )
+)
+
+if response.get("status") != "ready":
+    raise SystemExit(
+        "Readiness response status is not ready."
+    )
+
+if response.get("data", {}).get("ready") is not True:
+    raise SystemExit(
+        "Readiness response does not report "
+        "data.ready=true."
+    )
+
+metadata = response.get("metadata")
+
+if not isinstance(metadata, dict):
+    raise SystemExit(
+        "Readiness metadata is missing."
+    )
+
+if metadata.get("active_verifier_mode") != "llm":
+    raise SystemExit(
+        "Readiness active verifier is not llm."
+    )
+
+if metadata.get("llm_provider") != "openai":
+    raise SystemExit(
+        "Readiness provider is not openai."
+    )
+
+if "initialization_error" in metadata:
+    raise SystemExit(
+        "Readiness exposed initialization_error."
+    )
+PY
+
+echo
 echo "Checking ${BASE_URL}/health ..."
 
 curl \
@@ -64,6 +123,12 @@ for field_name, expected_value in (
         )
 
 serialized_status = json.dumps(status)
+
+if "initialization_error" in status:
+    errors.append(
+        "Health response exposed "
+        "initialization_error."
+    )
 
 for forbidden_value in (
     "OPENAI_API_KEY",

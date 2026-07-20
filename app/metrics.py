@@ -19,6 +19,8 @@ KNOWN_HTTP_PATHS = {
     "/",
     "/docs",
     "/health",
+    "/live",
+    "/ready",
     "/metrics",
     "/openapi.json",
     "/redoc",
