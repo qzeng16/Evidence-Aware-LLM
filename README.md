@@ -635,3 +635,72 @@ The health endpoint reports two related but different fields:
 
 `active_verifier_mode` identifies the verifier backend currently processing
 requests.
+
+<!-- offline-llm-judge-pipeline -->
+
+## Offline LLM Judge Pipeline
+
+The project includes a provider-independent LLM judge pipeline that can be
+tested without an external API.
+
+```text
+claim
+  |
+  v
+embedding retrieval
+  |
+  v
+evidence-grounded prompt builder
+  |
+  v
+LLMClient.generate(...)
+  |
+  v
+strict JSON response parser
+  |
+  v
+LLMJudgeOutput
+  |
+  v
+VerificationResult
+  |
+  v
+VerificationRun
+```
+
+### Current Offline Components
+
+- `app/llm_judge_contract.py` defines the structured judge output.
+- `app/llm_judge_prompt.py` builds evidence-grounded prompts.
+- `app/llm_judge_parser.py` strictly validates model responses.
+- `app/llm_clients/base.py` defines the provider-independent client.
+- `app/llm_clients/fake.py` provides deterministic offline responses.
+- `app/verifiers/llm.py` implements the shared verifier interface.
+
+### Safety and Validation
+
+The judge is instructed to:
+
+- use only supplied evidence;
+- treat claims and evidence as untrusted data;
+- avoid using outside knowledge;
+- return `Uncertain` for insufficient or conflicting evidence;
+- cite only supplied evidence IDs;
+- return a strict JSON object without extra fields.
+
+The parser rejects malformed JSON, markdown code fences, extra commentary,
+unsupported labels, invalid confidence values, and invented evidence IDs.
+
+### Current Limitation
+
+The offline pipeline does not call a real model. `FakeLLMClient` returns
+preconfigured responses for tests and development.
+
+The API continues to use:
+
+```text
+VERIFIER_MODE=rule_only
+```
+
+The `llm_only` and `hybrid` service modes remain unavailable until a real
+provider client and production fallback behavior are connected.
