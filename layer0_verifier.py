@@ -25,44 +25,85 @@ LOG_PATH = LOG_DIR / "verification_logs.jsonl"
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
+EVIDENCE_METADATA_FIELDS = (
+    "evidence_id",
+    "source_name",
+    "source_type",
+    "topic",
+    "source_url",
+    "published_at",
+    "retrieved_at",
+)
+
 MIN_FINAL_SCORE_FOR_VERIFICATION = 0.45
 MIN_EMBEDDING_SCORE_FOR_VERIFICATION = 0.40
 MIN_KEYWORD_SCORE_FOR_VERIFICATION = 0.20
 
 
-def load_evidence(file_path: Path) -> List[Dict[str, str]]:
+def load_evidence(
+    file_path: Path
+) -> List[Dict[str, str]]:
+    """Load the runtime evidence corpus.
+
+    The title and text columns remain required. Provenance metadata fields
+    are optional so legacy two-column evidence CSV files remain compatible.
+    Missing optional values are represented as empty strings.
+    """
+
     if not file_path.exists():
-        raise FileNotFoundError(f"Evidence file not found: {file_path}")
+        raise FileNotFoundError(
+            f"Evidence file not found: {file_path}"
+        )
 
     evidence_list = []
 
-    with open(file_path, "r", encoding="utf-8") as file:
+    with open(
+        file_path,
+        "r",
+        encoding="utf-8",
+        newline="",
+    ) as file:
         reader = csv.DictReader(file)
 
         if reader.fieldnames is None:
             raise ValueError("evidence.csv is empty.")
 
         required_columns = {"title", "text"}
-        missing_columns = required_columns - set(reader.fieldnames)
+        missing_columns = (
+            required_columns - set(reader.fieldnames)
+        )
 
         if missing_columns:
-            raise ValueError(f"evidence.csv is missing columns: {missing_columns}")
+            raise ValueError(
+                "evidence.csv is missing columns: "
+                f"{missing_columns}"
+            )
 
         for row in reader:
-            title = row["title"].strip()
-            text = row["text"].strip()
+            title = (row.get("title") or "").strip()
+            text = (row.get("text") or "").strip()
 
-            if title and text:
-                evidence_list.append({
-                    "title": title,
-                    "text": text
-                })
+            if not title or not text:
+                continue
+
+            evidence_record = {
+                "title": title,
+                "text": text,
+            }
+
+            for field_name in EVIDENCE_METADATA_FIELDS:
+                evidence_record[field_name] = (
+                    row.get(field_name) or ""
+                ).strip()
+
+            evidence_list.append(evidence_record)
 
     if not evidence_list:
-        raise ValueError("No valid evidence found in evidence.csv.")
+        raise ValueError(
+            "No valid evidence found in evidence.csv."
+        )
 
     return evidence_list
-
 
 def load_rules(file_path: Path) -> List[Dict]:
     if not file_path.exists():
@@ -201,13 +242,30 @@ def search_evidence(
 
         final_score = 0.8 * embedding_score + 0.2 * keyword_score
 
-        candidates.append({
+        candidate = {
             "title": evidence["title"],
             "text": evidence["text"],
+        }
+
+        for field_name in EVIDENCE_METADATA_FIELDS:
+            candidate[field_name] = evidence.get(
+                field_name,
+                "",
+            )
+
+        candidate.update({
             "score": round(final_score, 4),
-            "embedding_score": round(embedding_score, 4),
-            "keyword_score": round(keyword_score, 4)
+            "embedding_score": round(
+                embedding_score,
+                4,
+            ),
+            "keyword_score": round(
+                keyword_score,
+                4,
+            ),
         })
+
+        candidates.append(candidate)
 
     reranked_results = sorted(
         candidates,
