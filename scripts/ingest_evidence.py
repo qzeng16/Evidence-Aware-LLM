@@ -35,7 +35,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT_PATH = (
-    PROJECT_ROOT / "data" / "raw" / "evidence_seed.jsonl"
+    PROJECT_ROOT / "data" / "raw" / "evidence_v2.jsonl"
 )
 DEFAULT_OUTPUT_PATH = PROJECT_ROOT / "data" / "evidence.csv"
 

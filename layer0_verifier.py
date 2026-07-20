@@ -342,6 +342,13 @@ def verify_claim(
     model: SentenceTransformer,
     evidence_embeddings: np.ndarray
 ) -> Dict:
+    """Verify a claim against multiple retrieved evidence candidates.
+
+    Retrieved evidence is evaluated in ranked order. A high-ranking
+    evidence item that does not match a verification rule no longer blocks
+    a lower-ranking item that can support or refute the claim.
+    """
+
     evidence_results = search_evidence(
         claim=claim,
         evidence_list=evidence_db,
@@ -359,34 +366,112 @@ def verify_claim(
             "abstention_reason": "No relevant evidence found."
         }
 
-    best_evidence = evidence_results[0]
+    verification_candidates = []
+    abstention_reasons = []
+    eligible_evidence_count = 0
 
-    abstain, reason = should_abstain(best_evidence, claim)
+    for evidence in evidence_results:
+        abstain, reason = should_abstain(
+            evidence,
+            claim
+        )
 
-    if abstain:
-        return {
-            "claim": claim,
-            "label": "Uncertain",
-            "confidence": 0.35,
-            "evidence": evidence_results,
-            "matched_rule": None,
-            "abstention_reason": reason
+        if abstain:
+            if reason and reason not in abstention_reasons:
+                abstention_reasons.append(reason)
+
+            continue
+
+        eligible_evidence_count += 1
+
+        label, confidence, matched_rule = (
+            infer_label_from_claim_and_evidence(
+                claim=claim,
+                evidence_text=evidence.get("text", "")
+            )
+        )
+
+        if label == "Uncertain":
+            continue
+
+        verification_candidates.append(
+            {
+                "label": label,
+                "confidence": confidence,
+                "matched_rule": matched_rule,
+                "retrieval_score": evidence.get(
+                    "score",
+                    0.0
+                ),
+                "evidence": evidence
+            }
+        )
+
+    if verification_candidates:
+        candidate_labels = {
+            candidate["label"]
+            for candidate in verification_candidates
         }
 
-    label, confidence, matched_rule = infer_label_from_claim_and_evidence(
-        claim=claim,
-        evidence_text=best_evidence["text"]
-    )
+        if len(candidate_labels) > 1:
+            return {
+                "claim": claim,
+                "label": "Uncertain",
+                "confidence": 0.45,
+                "evidence": evidence_results,
+                "matched_rule": None,
+                "abstention_reason": (
+                    "Retrieved evidence produced conflicting "
+                    "rule-based labels."
+                )
+            }
+
+        selected_candidate = max(
+            verification_candidates,
+            key=lambda candidate: (
+                candidate["retrieval_score"],
+                candidate["confidence"]
+            )
+        )
+
+        return {
+            "claim": claim,
+            "label": selected_candidate["label"],
+            "confidence": selected_candidate["confidence"],
+            "evidence": evidence_results,
+            "matched_rule": selected_candidate["matched_rule"],
+            "abstention_reason": None
+        }
+
+    if eligible_evidence_count == 0:
+        if abstention_reasons:
+            abstention_reason = (
+                "All retrieved evidence candidates were rejected: "
+                + " | ".join(abstention_reasons)
+            )
+        else:
+            abstention_reason = (
+                "All retrieved evidence candidates failed "
+                "verification thresholds."
+            )
+
+        confidence = 0.35
+
+    else:
+        abstention_reason = (
+            "Relevant evidence was retrieved, but no "
+            "verification rule matched."
+        )
+        confidence = 0.5
 
     return {
         "claim": claim,
-        "label": label,
+        "label": "Uncertain",
         "confidence": confidence,
         "evidence": evidence_results,
-        "matched_rule": matched_rule,
-        "abstention_reason": None
+        "matched_rule": None,
+        "abstention_reason": abstention_reason
     }
-
 
 def build_success_response(result: Dict) -> Dict:
     return {

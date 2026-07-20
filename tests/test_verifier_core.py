@@ -115,3 +115,85 @@ def test_error_response_structure():
     assert response["status"] == "error"
     assert "timestamp" in response
     assert response["error"]["message"] == "Something went wrong."
+
+
+@pytest.mark.parametrize(
+    "claim, expected_label, expected_rule",
+    [
+        (
+            (
+                "Retrieval augmented generation can improve "
+                "factual reliability."
+            ),
+            "Supported",
+            "supports_rag_improves_reliability",
+        ),
+        (
+            (
+                "Retrieval augmented generation cannot improve "
+                "factual reliability."
+            ),
+            "Refuted",
+            "negates_rag_improves_reliability",
+        ),
+    ],
+)
+def test_verify_claim_checks_multiple_evidence_candidates(
+    monkeypatch,
+    claim,
+    expected_label,
+    expected_rule,
+):
+    """A rule match in lower-ranked evidence should still be used."""
+
+    retrieved_evidence = [
+        {
+            "title": (
+                "RAG Improved Factuality in Evaluated "
+                "Generation Tasks"
+            ),
+            "text": (
+                "In the original RAG experiments, "
+                "retrieval-augmented models generated more "
+                "factual language than a parametric-only "
+                "sequence-to-sequence baseline."
+            ),
+            "embedding_score": 0.72,
+            "keyword_score": 0.57,
+            "score": 0.69,
+        },
+        {
+            "title": "Retrieval Augmented Generation",
+            "text": (
+                "RAG can improve factual reliability by "
+                "grounding answers in retrieved documents."
+            ),
+            "embedding_score": 0.63,
+            "keyword_score": 0.43,
+            "score": 0.61,
+        },
+    ]
+
+    def fake_search_evidence(**kwargs):
+        del kwargs
+        return retrieved_evidence
+
+    monkeypatch.setattr(
+        verifier,
+        "search_evidence",
+        fake_search_evidence,
+    )
+
+    result = verifier.verify_claim(
+        claim=claim,
+        evidence_db=[],
+        verification_rules=[],
+        model=object(),
+        evidence_embeddings=None,
+    )
+
+    assert result["label"] == expected_label
+    assert result["matched_rule"] == expected_rule
+    assert result["abstention_reason"] is None
+    assert len(result["evidence"]) == 2
+
