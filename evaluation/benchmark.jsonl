@@ -1,0 +1,9 @@
+{"id":"eval-001","claim":"Retrieval augmented generation can improve factual reliability.","expected_label":"Supported","category":"rag"}
+{"id":"eval-002","claim":"Large language models can generate unsupported or hallucinated claims.","expected_label":"Supported","category":"hallucination"}
+{"id":"eval-003","claim":"Grounding model answers in retrieved evidence can reduce unsupported generation.","expected_label":"Supported","category":"grounding"}
+{"id":"eval-004","claim":"Retrieval augmented generation always eliminates hallucinations.","expected_label":"Refuted","category":"absolute_claim"}
+{"id":"eval-005","claim":"Large language models are always reliable when trained on small biased datasets.","expected_label":"Refuted","category":"data_quality"}
+{"id":"eval-006","claim":"Retrieving documents guarantees that every generated claim is correct.","expected_label":"Refuted","category":"absolute_claim"}
+{"id":"eval-007","claim":"Retrieval augmented generation is cheaper than every parametric language model in every deployment.","expected_label":"Uncertain","category":"cost"}
+{"id":"eval-008","claim":"All large language models use the same retrieval architecture.","expected_label":"Uncertain","category":"architecture"}
+{"id":"eval-009","claim":"LLM judges are more accurate than human experts in every professional domain.","expected_label":"Uncertain","category":"evaluation"}
