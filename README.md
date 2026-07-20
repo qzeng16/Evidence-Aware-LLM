@@ -4,6 +4,47 @@ app_port: 8000
 license: apache-2.0
 ---
 
+<!-- LIVE_DEPLOYMENT_START -->
+## Live Deployment
+
+The rule-based API is publicly deployed as a Dockerized FastAPI
+service on Hugging Face Spaces.
+
+- **API base URL:** `https://qzeng16-evidence-aware-llm-api.hf.space`
+- **Swagger UI:** https://qzeng16-evidence-aware-llm-api.hf.space/docs
+- **Health endpoint:** https://qzeng16-evidence-aware-llm-api.hf.space/health
+- **Verification endpoint:** `POST /verify`
+- **Deployment mode:** `VERIFIER_MODE=rule_only`
+
+The public deployment does not require or expose an OpenAI API key.
+
+### Verify a claim
+
+~~~bash
+curl \
+  --request POST \
+  "https://qzeng16-evidence-aware-llm-api.hf.space/verify" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "claim": "Retrieval augmented generation can improve factual reliability."
+  }'
+~~~
+
+### Deployment commands
+
+Validate the public deployment:
+
+~~~bash
+./scripts/hf_space.sh check
+~~~
+
+Deploy the current committed Git revision:
+
+~~~bash
+./scripts/hf_space.sh deploy
+~~~
+<!-- LIVE_DEPLOYMENT_END -->
+
 # Evidence-Aware LLM Claim Verification System
 
 [![CI](https://github.com/qzeng16/Evidence-Aware-LLM/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/qzeng16/Evidence-Aware-LLM/actions/workflows/ci.yml)
