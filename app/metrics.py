@@ -264,6 +264,8 @@ def record_verification_response(
             "invalid_request",
             "service_unavailable",
             "service_overloaded",
+            "payload_too_large",
+            "unsupported_media_type",
             "provider_error",
             "internal_error",
         }

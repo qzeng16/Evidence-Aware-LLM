@@ -22,6 +22,12 @@ VERIFICATION_QUEUE_TIMEOUT_SECONDS_ENV = (
     "VERIFICATION_QUEUE_TIMEOUT_SECONDS"
 )
 
+MAX_REQUEST_BODY_BYTES_ENV = (
+    "MAX_REQUEST_BODY_BYTES"
+)
+
+MAX_CLAIM_LENGTH_ENV = "MAX_CLAIM_LENGTH"
+
 
 RULE_ONLY_MODE = "rule_only"
 LLM_ONLY_MODE = "llm_only"
@@ -35,6 +41,9 @@ DEFAULT_OPENAI_MAX_RETRIES = 2
 DEFAULT_MAX_CONCURRENT_VERIFICATIONS = 4
 
 DEFAULT_VERIFICATION_QUEUE_TIMEOUT_SECONDS = 0.5
+
+DEFAULT_MAX_REQUEST_BODY_BYTES = 16384
+DEFAULT_MAX_CLAIM_LENGTH = 4000
 
 
 SUPPORTED_VERIFIER_MODES = {
@@ -75,6 +84,14 @@ class AppConfig:
 
     verification_queue_timeout_seconds: float = (
         DEFAULT_VERIFICATION_QUEUE_TIMEOUT_SECONDS
+    )
+
+    max_request_body_bytes: int = (
+        DEFAULT_MAX_REQUEST_BODY_BYTES
+    )
+
+    max_claim_length: int = (
+        DEFAULT_MAX_CLAIM_LENGTH
     )
 
     @property
@@ -307,6 +324,32 @@ def load_app_config(
                 ),
                 field_name=(
                     VERIFICATION_QUEUE_TIMEOUT_SECONDS_ENV
+                ),
+            )
+        ),
+        max_request_body_bytes=(
+            normalize_positive_integer(
+                environment.get(
+                    MAX_REQUEST_BODY_BYTES_ENV
+                ),
+                default=(
+                    DEFAULT_MAX_REQUEST_BODY_BYTES
+                ),
+                field_name=(
+                    MAX_REQUEST_BODY_BYTES_ENV
+                ),
+            )
+        ),
+        max_claim_length=(
+            normalize_positive_integer(
+                environment.get(
+                    MAX_CLAIM_LENGTH_ENV
+                ),
+                default=(
+                    DEFAULT_MAX_CLAIM_LENGTH
+                ),
+                field_name=(
+                    MAX_CLAIM_LENGTH_ENV
                 ),
             )
         ),

@@ -8,6 +8,12 @@ INVALID_CLAIM_ERROR = "invalid_claim"
 INVALID_REQUEST_ERROR = "invalid_request"
 SERVICE_UNAVAILABLE_ERROR = "service_unavailable"
 SERVICE_OVERLOADED_ERROR = "service_overloaded"
+
+PAYLOAD_TOO_LARGE_ERROR = "payload_too_large"
+
+UNSUPPORTED_MEDIA_TYPE_ERROR = (
+    "unsupported_media_type"
+)
 PROVIDER_ERROR = "provider_error"
 INTERNAL_ERROR = "internal_error"
 NOT_FOUND_ERROR = "not_found"
@@ -136,6 +142,12 @@ def http_status_for_error(
         INVALID_REQUEST_ERROR,
     }:
         return 400
+
+    if error_type == PAYLOAD_TOO_LARGE_ERROR:
+        return 413
+
+    if error_type == UNSUPPORTED_MEDIA_TYPE_ERROR:
+        return 415
 
     if error_type == SERVICE_OVERLOADED_ERROR:
         return 429

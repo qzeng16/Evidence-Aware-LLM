@@ -14,6 +14,7 @@ from app.error_contract import (
 from app.concurrency import configure_verification_concurrency
 
 from app.config import (
+    DEFAULT_MAX_CLAIM_LENGTH,
     DEFAULT_VERIFIER_MODE,
     HYBRID_MODE,
     LLM_ONLY_MODE,
@@ -67,6 +68,17 @@ def get_app_config() -> Optional[AppConfig]:
         return config
 
     return None
+
+
+def get_max_claim_length() -> int:
+    """Return the configured maximum claim length."""
+
+    config = get_app_config()
+
+    if config is None:
+        return DEFAULT_MAX_CLAIM_LENGTH
+
+    return config.max_claim_length
 
 
 def get_active_verifier() -> Optional[Verifier]:

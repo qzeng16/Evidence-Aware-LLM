@@ -36,6 +36,7 @@ from app.concurrency import (
     get_verification_concurrency_controller,
 )
 from app.error_contract import (
+    INVALID_CLAIM_ERROR,
     SERVICE_OVERLOADED_ERROR,
     build_api_error_response,
 )
@@ -43,6 +44,7 @@ from app.observability import REQUEST_ID_HEADER
 from app.services import (
     get_active_verifier_mode,
     get_configured_verifier_mode,
+    get_max_claim_length,
     is_llm_verifier_available,
 )
 
@@ -176,6 +178,8 @@ def metrics_endpoint() -> Response:
     response_model=VerifyResponse,
     responses={
         400: {"model": VerifyResponse},
+        413: {"model": VerifyResponse},
+        415: {"model": VerifyResponse},
         422: {"model": VerifyResponse},
         429: {"model": VerifyResponse},
         500: {"model": VerifyResponse},
@@ -190,6 +194,37 @@ def verify_claim(
     """Verify one claim using the active service mode."""
 
     request_id = _request_id(request)
+
+    maximum_claim_length = (
+        get_max_claim_length()
+    )
+
+    if len(payload.claim) > maximum_claim_length:
+        response = build_api_error_response(
+            error_type=INVALID_CLAIM_ERROR,
+            code="claim_too_long",
+            message=(
+                "The claim exceeds the maximum "
+                "allowed length of {} characters."
+            ).format(
+                maximum_claim_length
+            ),
+            retryable=False,
+            request_id=request_id,
+            metadata=_safe_verification_metadata(),
+        )
+
+        record_verification_response(
+            response
+        )
+
+        return JSONResponse(
+            status_code=400,
+            content=response,
+            headers={
+                REQUEST_ID_HEADER: request_id,
+            },
+        )
 
     try:
         with (

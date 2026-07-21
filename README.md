@@ -935,3 +935,35 @@ multi-process or multi-instance deployment therefore has aggregate
 capacity equal to the combined capacity of its running processes.
 
 <!-- concurrency-protection:end -->
+
+<!-- request-boundaries:start -->
+
+## API request boundaries
+
+The `POST /verify` endpoint applies configurable input and request-body
+limits before verification begins.
+
+Default settings:
+
+- `MAX_REQUEST_BODY_BYTES=16384`
+- `MAX_CLAIM_LENGTH=4000`
+
+The API returns the following safe responses:
+
+- HTTP 400 with `claim_too_long` when the claim exceeds the configured character limit.
+- HTTP 413 with `payload_too_large` when the HTTP request body exceeds the configured byte limit.
+- HTTP 415 with `unsupported_media_type` when `/verify` does not receive JSON.
+- HTTP 422 with `invalid_request` when JSON parsing or request-schema validation fails.
+
+`application/json` and media types ending in `+json` are accepted.
+Boundary errors preserve the request ID, use the unified API error
+contract, and do not echo submitted request content.
+
+Prometheus records boundary failures through
+`evidence_verification_errors_total` and normal HTTP status metrics.
+
+Run the real Docker boundary check with:
+
+`./scripts/request_boundary_check.sh`
+
+<!-- request-boundaries:end -->

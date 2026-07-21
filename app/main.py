@@ -6,6 +6,9 @@ from app.exception_handlers import (
 from app.observability import (
     RequestLoggingMiddleware,
 )
+from app.request_limits import (
+    RequestBoundaryMiddleware,
+)
 from app.routes import router
 from app.services import initialize_service
 
@@ -20,6 +23,10 @@ app = FastAPI(
         "classification."
     ),
     version="1.0.0",
+)
+
+app.add_middleware(
+    RequestBoundaryMiddleware
 )
 
 app.add_middleware(
