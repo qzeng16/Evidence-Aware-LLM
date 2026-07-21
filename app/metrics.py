@@ -6,6 +6,7 @@ from prometheus_client import (
     CONTENT_TYPE_LATEST,
     CollectorRegistry,
     Counter,
+    Gauge,
     Histogram,
     generate_latest,
 )
@@ -76,6 +77,38 @@ VERIFICATION_ERRORS_TOTAL = Counter(
 )
 
 
+VERIFICATION_IN_FLIGHT = Gauge(
+    "evidence_verification_in_flight",
+    "Verification requests currently executing.",
+    registry=METRICS_REGISTRY,
+)
+
+VERIFICATION_REJECTED_TOTAL = Counter(
+    "evidence_verification_rejected_total",
+    "Verification requests rejected due to saturation.",
+    registry=METRICS_REGISTRY,
+)
+
+VERIFICATION_QUEUE_WAIT_SECONDS = Histogram(
+    "evidence_verification_queue_wait_seconds",
+    "Time spent waiting for a verification execution slot.",
+    buckets=(
+        0.001,
+        0.005,
+        0.01,
+        0.025,
+        0.05,
+        0.1,
+        0.25,
+        0.5,
+        1.0,
+        2.5,
+        5.0,
+    ),
+    registry=METRICS_REGISTRY,
+)
+
+
 VERIFICATION_RESULTS_TOTAL = Counter(
     "evidence_verification_results_total",
     "Total verification results by label and verifier.",
@@ -108,6 +141,34 @@ VERIFICATION_CONFIDENCE = Histogram(
     ),
     registry=METRICS_REGISTRY,
 )
+
+
+def record_verification_queue_wait(
+    wait_seconds: float,
+) -> None:
+    """Record time spent waiting for an execution slot."""
+
+    VERIFICATION_QUEUE_WAIT_SECONDS.observe(
+        max(float(wait_seconds), 0.0)
+    )
+
+
+def record_verification_started() -> None:
+    """Increment the number of executing verifications."""
+
+    VERIFICATION_IN_FLIGHT.inc()
+
+
+def record_verification_finished() -> None:
+    """Decrement the number of executing verifications."""
+
+    VERIFICATION_IN_FLIGHT.dec()
+
+
+def record_verification_rejected() -> None:
+    """Record one request rejected due to saturation."""
+
+    VERIFICATION_REJECTED_TOTAL.inc()
 
 
 def normalize_metric_path(
@@ -202,6 +263,7 @@ def record_verification_response(
             "invalid_claim",
             "invalid_request",
             "service_unavailable",
+            "service_overloaded",
             "provider_error",
             "internal_error",
         }

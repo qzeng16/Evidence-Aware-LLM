@@ -31,6 +31,21 @@ from app.services import verify_claim_service
 from app.web import DEMO_HTML
 
 
+from app.concurrency import (
+    VerificationOverloadedError,
+    get_verification_concurrency_controller,
+)
+from app.error_contract import (
+    SERVICE_OVERLOADED_ERROR,
+    build_api_error_response,
+)
+from app.observability import REQUEST_ID_HEADER
+from app.services import (
+    get_active_verifier_mode,
+    get_configured_verifier_mode,
+    is_llm_verifier_available,
+)
+
 router = APIRouter()
 
 
@@ -43,6 +58,20 @@ def _request_id(
         get_scope_request_id(request.scope)
         or normalize_request_id(None)
     )
+
+
+def _safe_verification_metadata() -> Dict[str, Any]:
+    """Return safe verifier metadata for overload responses."""
+
+    return {
+        "verifier_mode": get_configured_verifier_mode(),
+        "active_verifier_mode": (
+            get_active_verifier_mode()
+        ),
+        "llm_verifier_available": (
+            is_llm_verifier_available()
+        ),
+    }
 
 
 @router.get("/", response_model=None)
@@ -148,6 +177,7 @@ def metrics_endpoint() -> Response:
     responses={
         400: {"model": VerifyResponse},
         422: {"model": VerifyResponse},
+        429: {"model": VerifyResponse},
         500: {"model": VerifyResponse},
         502: {"model": VerifyResponse},
         503: {"model": VerifyResponse},
@@ -159,11 +189,43 @@ def verify_claim(
 ) -> Union[JSONResponse, Dict[str, Any]]:
     """Verify one claim using the active service mode."""
 
-    response = verify_claim_service(
-        payload.claim
-    )
-
     request_id = _request_id(request)
+
+    try:
+        with (
+            get_verification_concurrency_controller()
+            .slot()
+        ):
+            response = verify_claim_service(
+                payload.claim
+            )
+    except VerificationOverloadedError:
+        response = build_api_error_response(
+            error_type=SERVICE_OVERLOADED_ERROR,
+            code=SERVICE_OVERLOADED_ERROR,
+            message=(
+                "The verification service is "
+                "temporarily busy."
+            ),
+            retryable=True,
+            request_id=request_id,
+            metadata=_safe_verification_metadata(),
+        )
+
+        record_verification_response(
+            response
+        )
+
+        return JSONResponse(
+            status_code=http_status_for_error(
+                response
+            ),
+            content=response,
+            headers={
+                REQUEST_ID_HEADER: request_id,
+                "Retry-After": "1",
+            },
+        )
 
     attach_request_id(
         response,

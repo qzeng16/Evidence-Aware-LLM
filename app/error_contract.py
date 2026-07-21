@@ -7,6 +7,7 @@ from typing import Any, Dict, Optional
 INVALID_CLAIM_ERROR = "invalid_claim"
 INVALID_REQUEST_ERROR = "invalid_request"
 SERVICE_UNAVAILABLE_ERROR = "service_unavailable"
+SERVICE_OVERLOADED_ERROR = "service_overloaded"
 PROVIDER_ERROR = "provider_error"
 INTERNAL_ERROR = "internal_error"
 NOT_FOUND_ERROR = "not_found"
@@ -56,10 +57,11 @@ def build_api_error_response(
     retryable: bool,
     request_id: str,
     metadata: Optional[Dict[str, Any]] = None,
+    code: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Build a complete public error response."""
 
-    return {
+    response = {
         "status": "error",
         "timestamp": datetime.now(
             timezone.utc
@@ -73,6 +75,11 @@ def build_api_error_response(
             "retryable": bool(retryable),
         },
     }
+
+    if code:
+        response["error"]["code"] = code
+
+    return response
 
 
 def attach_request_id(
@@ -129,6 +136,9 @@ def http_status_for_error(
         INVALID_REQUEST_ERROR,
     }:
         return 400
+
+    if error_type == SERVICE_OVERLOADED_ERROR:
+        return 429
 
     if error_type == SERVICE_UNAVAILABLE_ERROR:
         return 503

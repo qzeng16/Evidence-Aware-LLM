@@ -11,6 +11,8 @@ from app.error_contract import (
     SERVICE_UNAVAILABLE_ERROR,
     annotate_error_response,
 )
+from app.concurrency import configure_verification_concurrency
+
 from app.config import (
     DEFAULT_VERIFIER_MODE,
     HYBRID_MODE,
@@ -221,6 +223,15 @@ def initialize_service() -> None:
 
     config = load_app_config()
     system_state["config"] = config
+
+    configure_verification_concurrency(
+        max_concurrent=(
+            config.max_concurrent_verifications
+        ),
+        queue_timeout_seconds=(
+            config.verification_queue_timeout_seconds
+        ),
+    )
 
     print(
         "Configured verifier mode: "

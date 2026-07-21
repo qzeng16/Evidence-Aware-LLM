@@ -14,6 +14,14 @@ OPENAI_TIMEOUT_SECONDS_ENV = (
 )
 OPENAI_MAX_RETRIES_ENV = "OPENAI_MAX_RETRIES"
 
+MAX_CONCURRENT_VERIFICATIONS_ENV = (
+    "MAX_CONCURRENT_VERIFICATIONS"
+)
+
+VERIFICATION_QUEUE_TIMEOUT_SECONDS_ENV = (
+    "VERIFICATION_QUEUE_TIMEOUT_SECONDS"
+)
+
 
 RULE_ONLY_MODE = "rule_only"
 LLM_ONLY_MODE = "llm_only"
@@ -23,6 +31,10 @@ DEFAULT_VERIFIER_MODE = RULE_ONLY_MODE
 DEFAULT_OPENAI_MODEL = "gpt-5-mini"
 DEFAULT_OPENAI_TIMEOUT_SECONDS = 30.0
 DEFAULT_OPENAI_MAX_RETRIES = 2
+
+DEFAULT_MAX_CONCURRENT_VERIFICATIONS = 4
+
+DEFAULT_VERIFICATION_QUEUE_TIMEOUT_SECONDS = 0.5
 
 
 SUPPORTED_VERIFIER_MODES = {
@@ -55,6 +67,14 @@ class AppConfig:
 
     openai_max_retries: int = (
         DEFAULT_OPENAI_MAX_RETRIES
+    )
+
+    max_concurrent_verifications: int = (
+        DEFAULT_MAX_CONCURRENT_VERIFICATIONS
+    )
+
+    verification_queue_timeout_seconds: float = (
+        DEFAULT_VERIFICATION_QUEUE_TIMEOUT_SECONDS
     )
 
     @property
@@ -159,6 +179,31 @@ def normalize_positive_float(
     return normalized_value
 
 
+def normalize_positive_integer(
+    value: Optional[str],
+    default: int,
+    field_name: str,
+) -> int:
+    """Normalize a strictly positive integer setting."""
+
+    if value is None or not value.strip():
+        return default
+
+    try:
+        normalized_value = int(value)
+    except (TypeError, ValueError) as error:
+        raise ConfigurationError(
+            f"{field_name} must be an integer."
+        ) from error
+
+    if normalized_value <= 0:
+        raise ConfigurationError(
+            f"{field_name} must be greater than zero."
+        )
+
+    return normalized_value
+
+
 def normalize_nonnegative_integer(
     value: Optional[str],
     default: int,
@@ -236,6 +281,32 @@ def load_app_config(
                 ),
                 field_name=(
                     OPENAI_MAX_RETRIES_ENV
+                ),
+            )
+        ),
+        max_concurrent_verifications=(
+            normalize_positive_integer(
+                environment.get(
+                    MAX_CONCURRENT_VERIFICATIONS_ENV
+                ),
+                default=(
+                    DEFAULT_MAX_CONCURRENT_VERIFICATIONS
+                ),
+                field_name=(
+                    MAX_CONCURRENT_VERIFICATIONS_ENV
+                ),
+            )
+        ),
+        verification_queue_timeout_seconds=(
+            normalize_positive_float(
+                environment.get(
+                    VERIFICATION_QUEUE_TIMEOUT_SECONDS_ENV
+                ),
+                default=(
+                    DEFAULT_VERIFICATION_QUEUE_TIMEOUT_SECONDS
+                ),
+                field_name=(
+                    VERIFICATION_QUEUE_TIMEOUT_SECONDS_ENV
                 ),
             )
         ),

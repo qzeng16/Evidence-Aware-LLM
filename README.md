@@ -896,3 +896,42 @@ CI also runs a lightweight `/verify` performance smoke gate with deliberately wi
 The complete machine-readable report is stored at `performance/baselines/local_rule_only.json`.
 
 <!-- performance-baseline:end -->
+
+<!-- concurrency-protection:start -->
+
+## Concurrency protection and load shedding
+
+The `/verify` endpoint uses a configurable, process-local concurrency
+limit to protect the verifier during traffic bursts.
+
+Default settings:
+
+- `MAX_CONCURRENT_VERIFICATIONS=4`
+- `VERIFICATION_QUEUE_TIMEOUT_SECONDS=0.5`
+
+A request that cannot obtain an execution slot before the queue
+timeout receives `HTTP 429 Too Many Requests` with `Retry-After: 1`.
+
+The response follows the normal safe API error contract and uses the
+stable error type and code `service_overloaded`. Submitted claims,
+queue internals, and exception details are not included in the
+response.
+
+Saturation does not make the process unhealthy. `/live` and `/ready`
+remain available while excess `/verify` requests are rejected.
+
+Prometheus exposes:
+
+- `evidence_verification_in_flight`
+- `evidence_verification_rejected_total`
+- `evidence_verification_queue_wait_seconds`
+
+Run the real Docker overload check with:
+
+`./scripts/concurrency_overload_check.sh`
+
+The limit applies independently to each application process. A
+multi-process or multi-instance deployment therefore has aggregate
+capacity equal to the combined capacity of its running processes.
+
+<!-- concurrency-protection:end -->
