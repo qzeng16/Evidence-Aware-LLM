@@ -228,6 +228,15 @@ def build_section(
         "```",
         "",
         (
+            "CI also runs a lightweight `/verify` "
+            "performance smoke gate with deliberately "
+            "wide thresholds. It detects severe "
+            "regressions without treating shared "
+            "GitHub runners as precision benchmark "
+            "hardware."
+        ),
+        "",
+        (
             "The complete machine-readable report "
             "is stored at "
             "`performance/baselines/"

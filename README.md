@@ -891,6 +891,8 @@ Run the benchmark locally with:
 ./scripts/run_performance_baseline.sh
 ```
 
+CI also runs a lightweight `/verify` performance smoke gate with deliberately wide thresholds. It detects severe regressions without treating shared GitHub runners as precision benchmark hardware.
+
 The complete machine-readable report is stored at `performance/baselines/local_rule_only.json`.
 
 <!-- performance-baseline:end -->

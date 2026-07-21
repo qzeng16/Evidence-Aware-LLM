@@ -39,7 +39,7 @@ jobs:
           python -m pytest tests -q
 
   docker-build:
-    name: Docker image build
+    name: Docker build and performance smoke
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: test
@@ -47,6 +47,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -58,9 +63,23 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: false
+          load: true
           tags: evidence-llm-api:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Run performance smoke gate
+        env:
+          PERFORMANCE_SMOKE_IMAGE: evidence-llm-api:ci
+          PERFORMANCE_SMOKE_REQUESTS: "20"
+          PERFORMANCE_SMOKE_CONCURRENCY: "4"
+          PERFORMANCE_SMOKE_WARMUP: "3"
+          PERFORMANCE_SMOKE_MIN_SUCCESS_RATE: "1.0"
+          PERFORMANCE_SMOKE_MIN_RPS: "1.0"
+          PERFORMANCE_SMOKE_MAX_P95_MS: "5000"
+        run: |
+          ./scripts/performance_smoke_check.sh
+
 
   deploy:
     name: Deploy Hugging Face Space
