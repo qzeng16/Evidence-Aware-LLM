@@ -98,8 +98,8 @@ required_demo_content = (
     'id="verify-form"',
     'id="claim"',
     'id="submit-button"',
-    'requestJson("/health"',
-    'requestJson("/verify"',
+    '<link rel="stylesheet" href="/assets/demo.css">',
+    '<script src="/assets/demo.js" defer></script>',
 )
 
 missing_demo_content = [
@@ -113,6 +113,56 @@ if missing_demo_content:
         "Public demo validation failed. Missing:\n- "
         + "\n- ".join(missing_demo_content)
     )
+
+with urllib.request.urlopen(
+    f"{base_url}/assets/demo.css",
+    timeout=180,
+) as response:
+    if response.status != 200:
+        raise SystemExit(
+            "/assets/demo.css did not return HTTP 200."
+        )
+
+    demo_css = response.read().decode("utf-8")
+
+with urllib.request.urlopen(
+    f"{base_url}/assets/demo.js",
+    timeout=180,
+) as response:
+    if response.status != 200:
+        raise SystemExit(
+            "/assets/demo.js did not return HTTP 200."
+        )
+
+    demo_javascript = response.read().decode("utf-8")
+
+for required_css in (
+    ":root",
+    ".panel",
+):
+    if required_css not in demo_css:
+        raise SystemExit(
+            "Public Demo CSS validation failed."
+        )
+
+for required_javascript in (
+    'requestJson("/health"',
+    'requestJson("/verify"',
+):
+    if required_javascript not in demo_javascript:
+        raise SystemExit(
+            "Public Demo JavaScript validation failed."
+        )
+
+if (
+    "<style>" in demo_html
+    or "<script>" in demo_html
+):
+    raise SystemExit(
+        "Public Demo still contains inline assets."
+    )
+
+print("Public demo assets returned HTTP 200")
 
 print("Public demo page returned HTTP 200")
 

@@ -1003,3 +1003,49 @@ Run the deterministic Docker timeout check with:
 `./scripts/verification_timeout_check.sh`
 
 <!-- verification-timeout:end -->
+
+<!-- security-headers:start -->
+
+## Browser and HTTP response security
+
+The application applies security headers to successful and error
+responses through a global ASGI middleware.
+
+Every HTTP response includes:
+
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: no-referrer`
+- a restrictive `Permissions-Policy`
+
+Dynamic API, health, metrics, documentation and error responses use:
+
+- `Cache-Control: no-store`
+
+The browser Demo uses a strict Content Security Policy with:
+
+- `default-src 'none'`
+- same-origin scripts, styles and API connections
+- `frame-ancestors 'none'`
+- `base-uri 'none'`
+- `object-src 'none'`
+- no `'unsafe-inline'`
+
+The Demo CSS and JavaScript are served as same-origin resources:
+
+- `/assets/demo.css`
+- `/assets/demo.js`
+
+These static assets use:
+
+- `Cache-Control: public, max-age=3600`
+
+The Demo-specific CSP is not applied to `/docs`, allowing the standard
+FastAPI Swagger interface to continue loading normally. HTTPS and HSTS
+remain responsibilities of the external TLS termination layer.
+
+Run the real Docker validation with:
+
+`./scripts/security_headers_check.sh`
+
+<!-- security-headers:end -->

@@ -48,8 +48,16 @@ def test_root_serves_demo_to_browser() -> None:
 
     assert "Evidence-Aware Claim Verification" in html
     assert 'id="verify-form"' in html
-    assert 'requestJson("/verify"' in html
-    assert 'requestJson("/health"' in html
+    assert (
+        'href="/assets/demo.css"'
+        in html
+    )
+    assert (
+        'src="/assets/demo.js"'
+        in html
+    )
+    assert "<style>" not in html
+    assert "<script>" not in html
 
 
 def test_root_preserves_json_navigation() -> None:

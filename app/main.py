@@ -10,6 +10,10 @@ from app.request_limits import (
     RequestBoundaryMiddleware,
 )
 from app.routes import router
+from app.security_headers import (
+    SecurityHeadersMiddleware,
+)
+from app.static_routes import router as static_router
 from app.services import initialize_service
 
 
@@ -33,6 +37,10 @@ app.add_middleware(
     RequestLoggingMiddleware
 )
 
+app.add_middleware(
+    SecurityHeadersMiddleware
+)
+
 register_exception_handlers(app)
 
 
@@ -40,5 +48,9 @@ register_exception_handlers(app)
 def startup_event() -> None:
     initialize_service()
 
+
+app.include_router(
+    static_router
+)
 
 app.include_router(router)
