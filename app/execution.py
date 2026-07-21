@@ -4,9 +4,16 @@ import threading
 import time
 from concurrent.futures import (
     ThreadPoolExecutor,
-    TimeoutError as FutureTimeoutError,
+    wait,
 )
-from typing import Any, Callable, Dict, TypeVar
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Optional,
+    Tuple,
+    TypeVar,
+)
 
 from app.concurrency import VerificationLease
 from app.config import (
@@ -26,8 +33,14 @@ class VerificationTimeoutError(RuntimeError):
     """Raised when HTTP waiting exceeds the configured timeout."""
 
 
+class VerificationExecutionUnavailableError(
+    RuntimeError
+):
+    """Raised after the executor stops accepting new work."""
+
+
 class VerificationExecutionManager:
-    """Execute verifier calls without releasing timed-out slots early."""
+    """Execute verifier work with timeout and shutdown safety."""
 
     def __init__(
         self,
@@ -50,19 +63,49 @@ class VerificationExecutionManager:
             timeout_seconds
         )
 
+        self._condition = threading.Condition()
+        self._accepting = True
+        self._active_tasks = 0
+        self._executor_shutdown = False
+
         self._executor = ThreadPoolExecutor(
             max_workers=self.max_workers,
             thread_name_prefix="verification",
         )
 
-    @staticmethod
+    @property
+    def accepting(self) -> bool:
+        """Report whether new tasks are accepted."""
+
+        with self._condition:
+            return self._accepting
+
+    @property
+    def active_tasks(self) -> int:
+        """Return the number of submitted unfinished tasks."""
+
+        with self._condition:
+            return self._active_tasks
+
+    def _finish_task(self) -> None:
+        """Record that one submitted task has really finished."""
+
+        with self._condition:
+            self._active_tasks -= 1
+
+            if self._active_tasks < 0:
+                self._active_tasks = 0
+
+            self._condition.notify_all()
+
     def _run_with_lease(
+        self,
         function: Callable[..., ResultType],
-        args: tuple,
+        args: Tuple[Any, ...],
         kwargs: Dict[str, Any],
         lease: VerificationLease,
     ) -> ResultType:
-        """Run one task and release its slot after real completion."""
+        """Run work and release resources only after completion."""
 
         started_at = time.perf_counter()
 
@@ -82,6 +125,7 @@ class VerificationExecutionManager:
             )
 
             lease.release()
+            self._finish_task()
 
     def execute(
         self,
@@ -90,39 +134,122 @@ class VerificationExecutionManager:
         lease: VerificationLease,
         **kwargs: Any
     ) -> ResultType:
-        """Wait for a result only up to the HTTP timeout."""
+        """Submit work and wait only up to the HTTP timeout."""
 
-        try:
-            future = self._executor.submit(
-                self._run_with_lease,
-                function,
-                args,
-                kwargs,
-                lease,
-            )
-        except BaseException:
-            lease.release()
-            raise
+        with self._condition:
+            if (
+                not self._accepting
+                or self._executor_shutdown
+            ):
+                lease.release()
 
-        try:
-            return future.result(
-                timeout=self.timeout_seconds
-            )
-        except FutureTimeoutError as error:
+                raise (
+                    VerificationExecutionUnavailableError(
+                        "Verification execution is shutting down."
+                    )
+                )
+
+            self._active_tasks += 1
+
+            try:
+                future = self._executor.submit(
+                    self._run_with_lease,
+                    function,
+                    args,
+                    kwargs,
+                    lease,
+                )
+            except BaseException:
+                self._active_tasks -= 1
+                self._condition.notify_all()
+                lease.release()
+                raise
+
+        completed, _ = wait(
+            (future,),
+            timeout=self.timeout_seconds,
+        )
+
+        if not completed:
             record_verification_timeout()
 
             raise VerificationTimeoutError(
                 "Verification execution exceeded "
                 "the configured timeout."
-            ) from error
+            )
 
-    def shutdown(self) -> None:
-        """Stop accepting new background work."""
+        return future.result()
 
-        self._executor.shutdown(
-            wait=False,
-            cancel_futures=False,
+    def begin_shutdown(self) -> None:
+        """Atomically stop accepting new verification tasks."""
+
+        with self._condition:
+            self._accepting = False
+            self._condition.notify_all()
+
+    def wait_for_idle(
+        self,
+        timeout_seconds: Optional[float],
+    ) -> bool:
+        """Wait for submitted tasks to finish within a deadline."""
+
+        deadline = None
+
+        if timeout_seconds is not None:
+            deadline = (
+                time.monotonic()
+                + max(
+                    float(timeout_seconds),
+                    0.0,
+                )
+            )
+
+        with self._condition:
+            while self._active_tasks > 0:
+                if deadline is None:
+                    self._condition.wait()
+                    continue
+
+                remaining_seconds = (
+                    deadline
+                    - time.monotonic()
+                )
+
+                if remaining_seconds <= 0:
+                    return False
+
+                self._condition.wait(
+                    timeout=remaining_seconds
+                )
+
+            return True
+
+    def shutdown(
+        self,
+        timeout_seconds: Optional[float] = None,
+    ) -> bool:
+        """Stop submissions and drain work when possible."""
+
+        self.begin_shutdown()
+
+        drained = self.wait_for_idle(
+            timeout_seconds
         )
+
+        should_shutdown_executor = False
+
+        with self._condition:
+            if not self._executor_shutdown:
+                self._executor_shutdown = True
+                should_shutdown_executor = True
+
+        if should_shutdown_executor:
+            self._executor.shutdown(
+                wait=drained,
+                cancel_futures=False,
+            )
+
+        return drained
 
 
 _manager_lock = threading.Lock()
@@ -155,7 +282,9 @@ def configure_verification_execution(
         previous = _manager
         _manager = replacement
 
-    previous.shutdown()
+    previous.shutdown(
+        timeout_seconds=0.0
+    )
 
 
 def get_verification_execution_manager(
@@ -164,3 +293,17 @@ def get_verification_execution_manager(
 
     with _manager_lock:
         return _manager
+
+
+def shutdown_verification_execution(
+    timeout_seconds: float,
+) -> bool:
+    """Gracefully stop the active verification executor."""
+
+    manager = (
+        get_verification_execution_manager()
+    )
+
+    return manager.shutdown(
+        timeout_seconds=timeout_seconds
+    )

@@ -10,6 +10,7 @@ from fastapi.responses import (
 )
 
 from app.execution import (
+    VerificationExecutionUnavailableError,
     VerificationTimeoutError,
     get_verification_execution_manager,
 )
@@ -274,6 +275,33 @@ def verify_claim(
                 lease=lease,
             )
         )
+    except VerificationExecutionUnavailableError:
+        response = build_api_error_response(
+            error_type=SERVICE_UNAVAILABLE_ERROR,
+            code="service_shutting_down",
+            message=(
+                "The verification service is shutting down."
+            ),
+            retryable=True,
+            request_id=request_id,
+            metadata=_safe_verification_metadata(),
+        )
+
+        record_verification_response(
+            response
+        )
+
+        return JSONResponse(
+            status_code=http_status_for_error(
+                response
+            ),
+            content=response,
+            headers={
+                REQUEST_ID_HEADER: request_id,
+                "Retry-After": "1",
+            },
+        )
+
     except VerificationTimeoutError:
         response = build_api_error_response(
             error_type=VERIFICATION_TIMEOUT_ERROR,

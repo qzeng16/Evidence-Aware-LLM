@@ -32,6 +32,10 @@ VERIFICATION_TIMEOUT_SECONDS_ENV = (
     "VERIFICATION_TIMEOUT_SECONDS"
 )
 
+GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS_ENV = (
+    "GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS"
+)
+
 
 RULE_ONLY_MODE = "rule_only"
 LLM_ONLY_MODE = "llm_only"
@@ -50,6 +54,8 @@ DEFAULT_MAX_REQUEST_BODY_BYTES = 16384
 DEFAULT_MAX_CLAIM_LENGTH = 4000
 
 DEFAULT_VERIFICATION_TIMEOUT_SECONDS = 30.0
+
+DEFAULT_GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS = 30.0
 
 
 SUPPORTED_VERIFIER_MODES = {
@@ -102,6 +108,10 @@ class AppConfig:
 
     verification_timeout_seconds: float = (
         DEFAULT_VERIFICATION_TIMEOUT_SECONDS
+    )
+
+    graceful_shutdown_timeout_seconds: float = (
+        DEFAULT_GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS
     )
 
     @property
@@ -373,6 +383,19 @@ def load_app_config(
                 ),
                 field_name=(
                     VERIFICATION_TIMEOUT_SECONDS_ENV
+                ),
+            )
+        ),
+        graceful_shutdown_timeout_seconds=(
+            normalize_positive_float(
+                environment.get(
+                    GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS_ENV
+                ),
+                default=(
+                    DEFAULT_GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS
+                ),
+                field_name=(
+                    GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS_ENV
                 ),
             )
         ),

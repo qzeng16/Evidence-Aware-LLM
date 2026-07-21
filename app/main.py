@@ -1,5 +1,9 @@
 from fastapi import FastAPI
 
+from app.lifecycle import (
+    application_lifespan,
+)
+
 from app.exception_handlers import (
     register_exception_handlers,
 )
@@ -14,10 +18,10 @@ from app.security_headers import (
     SecurityHeadersMiddleware,
 )
 from app.static_routes import router as static_router
-from app.services import initialize_service
 
 
 app = FastAPI(
+    lifespan=application_lifespan,
     title=(
         "Evidence-Aware Claim Verification API"
     ),
@@ -44,9 +48,6 @@ app.add_middleware(
 register_exception_handlers(app)
 
 
-@app.on_event("startup")
-def startup_event() -> None:
-    initialize_service()
 
 
 app.include_router(

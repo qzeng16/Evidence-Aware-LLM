@@ -1049,3 +1049,50 @@ Run the real Docker validation with:
 `./scripts/security_headers_check.sh`
 
 <!-- security-headers:end -->
+
+<!-- graceful-shutdown:start -->
+
+## Application lifespan and graceful shutdown
+
+The FastAPI application uses an application lifespan instead of
+deprecated startup and shutdown event decorators.
+
+At startup, the lifespan initializes:
+
+- application configuration
+- verifier resources
+- the process-local concurrency controller
+- the bounded verification execution pool
+
+At shutdown, the application:
+
+1. stops accepting new verification work;
+2. waits for already submitted verifier tasks;
+3. releases their concurrency leases;
+4. shuts down the verification thread pool;
+5. clears process-local service state.
+
+The maximum drain period is controlled by:
+
+- `GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS=30.0`
+
+A verifier that already returned HTTP 504 may still be running in the
+background. During shutdown, the application waits for this real work to
+finish up to the configured deadline.
+
+New submissions after execution shutdown begins are rejected with:
+
+- HTTP 503
+- error type `service_unavailable`
+- error code `service_shutting_down`
+- `retryable: true`
+- `Retry-After: 1`
+
+The Docker command uses `exec` so that termination signals reach the
+Uvicorn process directly.
+
+Run the deterministic SIGTERM validation with:
+
+`./scripts/graceful_shutdown_check.sh`
+
+<!-- graceful-shutdown:end -->
