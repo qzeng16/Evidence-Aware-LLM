@@ -109,6 +109,34 @@ VERIFICATION_QUEUE_WAIT_SECONDS = Histogram(
 )
 
 
+VERIFICATION_TIMEOUTS_TOTAL = Counter(
+    "evidence_verification_timeouts_total",
+    "Verification requests that exceeded the execution timeout.",
+    registry=METRICS_REGISTRY,
+)
+
+VERIFICATION_EXECUTION_DURATION_SECONDS = Histogram(
+    "evidence_verification_execution_duration_seconds",
+    "Actual verifier execution duration, including timed-out tasks.",
+    buckets=(
+        0.01,
+        0.025,
+        0.05,
+        0.1,
+        0.25,
+        0.5,
+        1.0,
+        2.5,
+        5.0,
+        10.0,
+        30.0,
+        60.0,
+        120.0,
+    ),
+    registry=METRICS_REGISTRY,
+)
+
+
 VERIFICATION_RESULTS_TOTAL = Counter(
     "evidence_verification_results_total",
     "Total verification results by label and verifier.",
@@ -169,6 +197,22 @@ def record_verification_rejected() -> None:
     """Record one request rejected due to saturation."""
 
     VERIFICATION_REJECTED_TOTAL.inc()
+
+
+def record_verification_timeout() -> None:
+    """Record one verification execution timeout."""
+
+    VERIFICATION_TIMEOUTS_TOTAL.inc()
+
+
+def record_verification_execution_duration(
+    duration_seconds: float,
+) -> None:
+    """Record the actual background execution duration."""
+
+    VERIFICATION_EXECUTION_DURATION_SECONDS.observe(
+        max(float(duration_seconds), 0.0)
+    )
 
 
 def normalize_metric_path(
@@ -266,6 +310,7 @@ def record_verification_response(
             "service_overloaded",
             "payload_too_large",
             "unsupported_media_type",
+            "verification_timeout",
             "provider_error",
             "internal_error",
         }

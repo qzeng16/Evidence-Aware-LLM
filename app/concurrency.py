@@ -21,6 +21,30 @@ class VerificationOverloadedError(RuntimeError):
     """Raised when no verification slot becomes available."""
 
 
+class VerificationLease:
+    """Own one acquired verification execution slot."""
+
+    def __init__(
+        self,
+        semaphore: threading.BoundedSemaphore,
+    ) -> None:
+        self._semaphore = semaphore
+        self._release_lock = threading.Lock()
+        self._released = False
+
+    def release(self) -> None:
+        """Release the slot exactly once."""
+
+        with self._release_lock:
+            if self._released:
+                return
+
+            self._released = True
+
+        record_verification_finished()
+        self._semaphore.release()
+
+
 class VerificationConcurrencyController:
     """Bound concurrent verification execution per process."""
 
@@ -49,9 +73,8 @@ class VerificationConcurrencyController:
             self.max_concurrent
         )
 
-    @contextmanager
-    def slot(self) -> Iterator[None]:
-        """Acquire one bounded verification execution slot."""
+    def acquire(self) -> VerificationLease:
+        """Acquire and return one verification slot lease."""
 
         started_waiting = time.perf_counter()
 
@@ -77,11 +100,20 @@ class VerificationConcurrencyController:
 
         record_verification_started()
 
+        return VerificationLease(
+            self._semaphore
+        )
+
+    @contextmanager
+    def slot(self) -> Iterator[None]:
+        """Acquire one slot for a synchronous operation."""
+
+        lease = self.acquire()
+
         try:
             yield
         finally:
-            record_verification_finished()
-            self._semaphore.release()
+            lease.release()
 
 
 _controller_lock = threading.Lock()

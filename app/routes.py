@@ -9,6 +9,10 @@ from fastapi.responses import (
     Response,
 )
 
+from app.execution import (
+    VerificationTimeoutError,
+    get_verification_execution_manager,
+)
 from app.error_contract import (
     attach_request_id,
     http_status_for_error,
@@ -38,6 +42,7 @@ from app.concurrency import (
 from app.error_contract import (
     INVALID_CLAIM_ERROR,
     SERVICE_OVERLOADED_ERROR,
+    VERIFICATION_TIMEOUT_ERROR,
     build_api_error_response,
 )
 from app.observability import REQUEST_ID_HEADER
@@ -185,6 +190,7 @@ def metrics_endpoint() -> Response:
         500: {"model": VerifyResponse},
         502: {"model": VerifyResponse},
         503: {"model": VerifyResponse},
+        504: {"model": VerifyResponse},
     },
 )
 def verify_claim(
@@ -227,13 +233,10 @@ def verify_claim(
         )
 
     try:
-        with (
+        lease = (
             get_verification_concurrency_controller()
-            .slot()
-        ):
-            response = verify_claim_service(
-                payload.claim
-            )
+            .acquire()
+        )
     except VerificationOverloadedError:
         response = build_api_error_response(
             error_type=SERVICE_OVERLOADED_ERROR,
@@ -259,6 +262,42 @@ def verify_claim(
             headers={
                 REQUEST_ID_HEADER: request_id,
                 "Retry-After": "1",
+            },
+        )
+
+    try:
+        response = (
+            get_verification_execution_manager()
+            .execute(
+                verify_claim_service,
+                payload.claim,
+                lease=lease,
+            )
+        )
+    except VerificationTimeoutError:
+        response = build_api_error_response(
+            error_type=VERIFICATION_TIMEOUT_ERROR,
+            code=VERIFICATION_TIMEOUT_ERROR,
+            message=(
+                "The verification request exceeded "
+                "the allowed execution time."
+            ),
+            retryable=True,
+            request_id=request_id,
+            metadata=_safe_verification_metadata(),
+        )
+
+        record_verification_response(
+            response
+        )
+
+        return JSONResponse(
+            status_code=http_status_for_error(
+                response
+            ),
+            content=response,
+            headers={
+                REQUEST_ID_HEADER: request_id,
             },
         )
 

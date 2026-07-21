@@ -14,6 +14,10 @@ PAYLOAD_TOO_LARGE_ERROR = "payload_too_large"
 UNSUPPORTED_MEDIA_TYPE_ERROR = (
     "unsupported_media_type"
 )
+
+VERIFICATION_TIMEOUT_ERROR = (
+    "verification_timeout"
+)
 PROVIDER_ERROR = "provider_error"
 INTERNAL_ERROR = "internal_error"
 NOT_FOUND_ERROR = "not_found"
@@ -142,6 +146,9 @@ def http_status_for_error(
         INVALID_REQUEST_ERROR,
     }:
         return 400
+
+    if error_type == VERIFICATION_TIMEOUT_ERROR:
+        return 504
 
     if error_type == PAYLOAD_TOO_LARGE_ERROR:
         return 413

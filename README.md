@@ -967,3 +967,39 @@ Run the real Docker boundary check with:
 `./scripts/request_boundary_check.sh`
 
 <!-- request-boundaries:end -->
+
+<!-- verification-timeout:start -->
+
+## Verification execution timeout
+
+Verification work runs in a process-local background executor with a
+configurable HTTP waiting limit.
+
+Default setting:
+
+- `VERIFICATION_TIMEOUT_SECONDS=30.0`
+
+When verification exceeds this limit, the API returns:
+
+- HTTP 504
+- error type and code `verification_timeout`
+- `retryable: true`
+- the same request ID in the response body and `X-Request-ID` header
+
+Returning HTTP 504 does not cancel a verifier that is already running.
+The verification continues in the background and retains its concurrency
+slot until the real execution finishes. This prevents timed-out requests
+from bypassing the configured concurrency limit.
+
+Prometheus exposes:
+
+- `evidence_verification_timeouts_total`
+- `evidence_verification_execution_duration_seconds`
+- `evidence_verification_in_flight`
+- `evidence_verification_rejected_total`
+
+Run the deterministic Docker timeout check with:
+
+`./scripts/verification_timeout_check.sh`
+
+<!-- verification-timeout:end -->

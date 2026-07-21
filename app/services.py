@@ -13,6 +13,10 @@ from app.error_contract import (
 )
 from app.concurrency import configure_verification_concurrency
 
+from app.execution import (
+    configure_verification_execution,
+)
+
 from app.config import (
     DEFAULT_MAX_CLAIM_LENGTH,
     DEFAULT_VERIFIER_MODE,
@@ -242,6 +246,15 @@ def initialize_service() -> None:
         ),
         queue_timeout_seconds=(
             config.verification_queue_timeout_seconds
+        ),
+    )
+
+    configure_verification_execution(
+        max_workers=(
+            config.max_concurrent_verifications
+        ),
+        timeout_seconds=(
+            config.verification_timeout_seconds
         ),
     )
 
